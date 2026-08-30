@@ -1,0 +1,52 @@
+/* ============================================================
+   BUTTONS.CSS
+   Button variants (primary/secondary/danger/ghost) plus the
+   animated gradient + shine hover effects.
+   ============================================================ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:transform var(--tf),box-shadow var(--tb),background var(--tb),border-color var(--tf),color var(--tf);text-decoration:none;white-space:nowrap;position:relative;overflow:hidden}
+.btn i{width:16px;height:16px}
+.btn:active{transform:scale(.95)}
+.btn::after{
+    content:'';position:absolute;top:0;left:-80%;
+    width:50%;height:100%;
+    background:linear-gradient(120deg,transparent,rgba(255,255,255,.4),transparent);
+    transform:skewX(-25deg);
+    transition:left .55s ease;
+    pointer-events:none;
+}
+.btn:hover::after{left:130%}
+
+.btn-p{
+    background:linear-gradient(135deg,var(--p400),var(--p600) 55%,var(--p800));
+    background-size:200% 200%;
+    color:#fff;
+    box-shadow:0 1px 3px rgba(var(--p500-rgb),.3);
+    animation:btnPulse 2.6s ease-in-out infinite;
+}
+.btn-p:hover{
+    background-position:100% 100%;
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(var(--p500-rgb),.35);
+    animation:none;
+}
+@keyframes btnPulse{
+    0%,100%{box-shadow:0 1px 3px rgba(var(--p500-rgb),.3)}
+    50%{box-shadow:0 1px 3px rgba(var(--p500-rgb),.3),0 0 0 7px rgba(var(--p500-rgb),.08)}
+}
+
+.btn-s{background:linear-gradient(135deg,#ffffff,var(--n100));background-size:200% 200%;color:var(--n700);border:1px solid var(--n200)}
+.btn-s:hover{background:linear-gradient(135deg,var(--p50),var(--p200));border-color:var(--p300);color:var(--p700);transform:translateY(-2px)}
+
+.btn-d{background:linear-gradient(135deg,#fb7185,var(--danger) 55%,#b91c1c);background-size:200% 200%;color:#fff}
+.btn-d:hover{background-position:100% 100%;transform:translateY(-2px);box-shadow:0 8px 20px rgba(239,68,68,.35)}
+
+.btn-g{background:transparent;color:var(--n600);padding:8px 12px}
+.btn-g:hover{background:linear-gradient(135deg,var(--p50),var(--p100));color:var(--p700)}
+
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-sm i{width:14px;height:14px}
+
+.btn:focus-visible,.ibtn:focus-visible,.hdr-btn:focus-visible{outline:2px solid var(--p500);outline-offset:2px}
+
+.ibtn,.hdr-btn,.mob-btn{position:relative;overflow:hidden;transition:transform var(--tf),box-shadow var(--tb),background var(--tb),border-color var(--tf),color var(--tf)}
+.ibtn:active,.hdr-btn:active,.mob-btn:active{transform:scale(.95)}

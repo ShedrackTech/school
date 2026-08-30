@@ -1,0 +1,48 @@
+{% extends 'main_app/staff_template/staff_base.html' %}
+{% block title %}{{ page_title }} — EduLedger{% endblock %}
+{% block breadcrumb %}{{ page_title }}{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">{{ page_title }}</h1><p class="pg-sub">Select a student and subject to update their scores</p></div>
+<div class="g2">
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Update Scores</h3></div>
+        <div class="card-bd">
+            <form method="post" id="resultForm">{% csrf_token %}
+                <div class="fg"><label class="fl">Student</label>{{ form.student }}{% if form.student.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.student.errors.0 }}</div>{% endif %}</div>
+                <div class="fg"><label class="fl">Subject</label>{{ form.subject }}{% if form.subject.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.subject.errors.0 }}</div>{% endif %}</div>
+                <div class="fr">
+                    <div class="fg"><label class="fl">Test Score (out of 30)</label>{{ form.test }}{% if form.test.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.test.errors.0 }}</div>{% endif %}</div>
+                    <div class="fg"><label class="fl">Exam Score (out of 70)</label>{{ form.exam }}{% if form.exam.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.exam.errors.0 }}</div>{% endif %}</div>
+                </div>
+                <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
+                    <button type="submit" class="btn btn-p"><i data-lucide="save"></i> Update Result</button>
+                    <a href="{% url 'staff_home' %}" class="btn btn-s">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Grading Guide</h3></div>
+        <div class="card-bd">
+            <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#ecfdf5;border-radius:var(--rs)"><span style="font-size:13px;font-weight:600;color:#059669">A+ / A</span><span style="font-size:12px;color:#047857">80 – 100</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f0fdf4;border-radius:var(--rs)"><span style="font-size:13px;font-weight:600;color:#16a34a">B+ / B</span><span style="font-size:12px;color:#15803d">60 – 79</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fffbeb;border-radius:var(--rs)"><span style="font-size:13px;font-weight:600;color:#d97706">C+ / C</span><span style="font-size:12px;color:#b45309">40 – 59</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fef2f2;border-radius:var(--rs)"><span style="font-size:13px;font-weight:600;color:#dc2626">F</span><span style="font-size:12px;color:#b91c1c">Below 40</span></div>
+            </div>
+            <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;background:var(--p50);border-radius:var(--rs);display:flex;align-items:center;justify-content:center"><i data-lucide="clipboard-list" style="width:18px;height:18px;color:var(--p600)"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--n800)">Test / Internal</div><div style="font-size:12px;color:var(--n400)">Maximum 30 marks</div></div></div>
+                <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;background:#fffbeb;border-radius:var(--rs);display:flex;align-items:center;justify-content:center"><i data-lucide="file-text" style="width:18px;height:18px;color:var(--a600)"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--n800)">Exam / Final</div><div style="font-size:12px;color:var(--n400)">Maximum 70 marks</div></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_css %}
+<style>
+#resultForm select,#resultForm input[type="number"],#resultForm input[type="text"]{width:100%;padding:11px 14px;border:1.5px solid var(--n200);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--n800);background:var(--n0);transition:all .15s;outline:none;-webkit-appearance:none;appearance:none}
+#resultForm select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+#resultForm select:focus,#resultForm input:focus{border-color:var(--p500);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+</style>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Notify Students — EduLedger{% endblock %}
+{% block breadcrumb %}Notify Students{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Send Notification to Students</h1><p class="pg-sub">Broadcast a message to all or selected students</p></div>
+<div class="card" style="max-width:720px">
+    <div class="card-hd"><h3 class="card-t">Compose Notification</h3></div>
+    <div class="card-bd">
+        <form method="post">{% csrf_token %}
+            <div class="fg"><label class="fl">Recipient</label><select name="recipient" class="fs" required><option value="">Select recipient</option><option value="all_students">All Students</option>{% for s in students %}<option value="{{ s.admin.id }}">{{ s.admin.first_name }} {{ s.admin.last_name }} ({{ s.admin.email }})</option>{% endfor %}</select><p class="fh">Select "All Students" to broadcast, or pick a specific student</p></div>
+            <div class="fg"><label class="fl">Message</label><textarea name="message" class="fta" rows="6" placeholder="Type your notification message here..." required></textarea></div>
+            <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
+                <button type="submit" class="btn btn-p"><i data-lucide="send"></i> Send Notification</button>
+                <a href="{% url 'admin_home' %}" class="btn btn-s">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

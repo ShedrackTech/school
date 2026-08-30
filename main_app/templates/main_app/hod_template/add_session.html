@@ -1,0 +1,22 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Add Session — EduLedger{% endblock %}
+{% block breadcrumb %}Add Session{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Add New Session</h1><p class="pg-sub">Define a new academic session period</p></div>
+<div class="card" style="max-width:540px">
+    <div class="card-hd"><h3 class="card-t">Session Details</h3></div>
+    <div class="card-bd">
+        <form method="post">{% csrf_token %}
+            <div class="fr">
+                <div class="fg"><label class="fl">Session Start</label><input type="date" name="start_year" class="fi" required></div>
+                <div class="fg"><label class="fl">Session End</label><input type="date" name="end_year" class="fi" required></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
+                <button type="submit" class="btn btn-p"><i data-lucide="calendar-plus"></i> Create Session</button>
+                <a href="{% url 'manage_session' %}" class="btn btn-s">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

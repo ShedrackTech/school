@@ -1,0 +1,37 @@
+{% extends 'main_app/staff_template/staff_base.html' %}
+{% block title %}Staff Dashboard — EduLedger{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Staff Dashboard</h1><p class="pg-sub">Welcome back, {{ request.user.first_name }} {{ request.user.last_name }}</p></div>
+<div class="stats">
+    <div class="st tl"><div class="st-top"><div class="st-ico"><i data-lucide="book-open"></i></div></div><div class="st-val">{{ subject_count|default_if_none:"--" }}</div><div class="st-lbl">My Subjects</div></div>
+    <div class="st am"><div class="st-top"><div class="st-ico"><i data-lucide="users"></i></div></div><div class="st-val">{{ student_count|default_if_none:"--" }}</div><div class="st-lbl">Total Students</div></div>
+    <div class="st sk"><div class="st-top"><div class="st-ico"><i data-lucide="file-check"></i></div></div><div class="st-val">{{ results_count|default_if_none:"--" }}</div><div class="st-lbl">Results Entered</div></div>
+    <div class="st rs"><div class="st-top"><div class="st-ico"><i data-lucide="clipboard-list"></i></div></div><div class="st-val">{{ attendance_count|default_if_none:"--" }}</div><div class="st-lbl">Attendance Records</div></div>
+</div>
+<div class="g2">
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">My Subjects</h3></div>
+        <div class="card-bd" style="padding:0">
+            {% if subjects %}
+            <table class="lt"><thead><tr><th>Subject</th><th>Course</th><th>Students</th></tr></thead>
+            <tbody>{% for s in subjects %}<tr><td style="font-weight:500;color:var(--n800)">{{ s.name }}</td><td>{{ s.course.name|default:"—" }}</td><td>{{ s.student_count|default:"—" }}</td></tr>{% endfor %}</tbody></table>
+            {% else %}
+            <div class="empty" style="padding:40px 20px"><div class="empty-ico" style="width:48px;height:48px"><i data-lucide="book-open"></i></div><h3 style="font-size:14px">No subjects assigned</h3></div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Quick Actions</h3></div>
+        <div class="card-bd">
+            <div style="display:flex;flex-direction:column;gap:10px">
+                <a href="{% url 'staff_take_attendance' %}" class="btn btn-p" style="justify-content:flex-start;padding:14px 18px"><i data-lucide="clipboard-check"></i> Take Attendance</a>
+                <a href="{% url 'staff_add_result' %}" class="btn btn-s" style="justify-content:flex-start;padding:14px 18px"><i data-lucide="plus-circle"></i> Add Result</a>
+                <a href="{% url 'edit_student_result' %}" class="btn btn-s" style="justify-content:flex-start;padding:14px 18px"><i data-lucide="file-edit"></i> Edit Result</a>
+                <a href="{% url 'staff_apply_leave' %}" class="btn btn-s" style="justify-content:flex-start;padding:14px 18px"><i data-lucide="calendar-off"></i> Apply Leave</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

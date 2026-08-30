@@ -1,0 +1,347 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — EduLedger</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <style>
+        /* ---------- Reset & tokens ---------- */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --p500: #14b8a6; --p600: #0d9488; --p700: #0f766e; --p800: #115e59;
+            --a500: #f59e0b;
+            --n0: #fff; --n200: #e2e8f0; --n300: #cbd5e1; --n400: #94a3b8;
+            --n500: #64748b; --n600: #475569; --n800: #1e293b; --n900: #0f172a;
+            --danger: #ef4444; --danger-bg: #fef2f2; --danger-border: #fecaca; --danger-text: #991b1b;
+            --rs: 6px; --rl: 14px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: var(--n900);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ---------- Left / brand panel ---------- */
+        .login-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(160deg, #042f2e 0%, #0f172a 40%, #1e293b 100%);
+        }
+        .login-left::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(13,148,136,.15) 0%, transparent 70%);
+            top: -100px; right: -100px;
+            border-radius: 50%;
+            animation: fb 8s ease-in-out infinite alternate;
+        }
+        .login-left::after {
+            content: '';
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(245,158,11,.08) 0%, transparent 70%);
+            bottom: -50px; left: -50px;
+            border-radius: 50%;
+            animation: fb 10s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes fb { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,-20px) scale(1.1); } }
+
+        .grid-dec {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .brand-area { position: relative; z-index: 2; text-align: center; max-width: 460px; }
+        .brand-ico-lg {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, var(--p500), var(--p700));
+            border-radius: var(--rl);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 32px;
+            box-shadow: 0 8px 32px rgba(13,148,136,.3);
+        }
+        .brand-ico-lg i { width: 36px; height: 36px; color: #fff; }
+
+        .brand-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 42px; font-weight: 700; color: #fff;
+            letter-spacing: -.03em; line-height: 1.1;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .brand-title span { display: inline-block; animation: tr .7s ease-out both; }
+        .brand-title span:nth-child(2) { animation-delay: .1s; }
+        .brand-title span:nth-child(3) { animation-delay: .2s; }
+        .brand-title .hl {
+            background: linear-gradient(90deg, var(--p500), var(--a500));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        @keyframes tr { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
+
+        .brand-desc { font-size: 15px; color: var(--n400); line-height: 1.7; animation: fu .7s ease-out .4s both; }
+        @keyframes fu { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; justify-content: center; animation: fu .7s ease-out .6s both; }
+        .pill {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 40px;
+            font-size: 12px; font-weight: 500; color: var(--n300);
+            backdrop-filter: blur(8px);
+        }
+        .pill i { width: 14px; height: 14px; color: var(--p500); }
+
+        /* ---------- Right / form panel ---------- */
+        .login-right {
+            width: 480px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px;
+            background: var(--n0);
+            position: relative;
+        }
+        .login-form { width: 100%; max-width: 380px; animation: fu .6s ease-out; }
+
+        .lf-hdr { margin-bottom: 36px; }
+        .lf-hdr h1 { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: var(--n900); letter-spacing: -.02em; margin-bottom: 8px; }
+        .lf-hdr p { font-size: 14px; color: var(--n500); }
+
+        .fg { margin-bottom: 22px; }
+        .fl { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--n600); margin-bottom: 8px; }
+
+        .iw { position: relative; }
+        .iw i.ii {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            width: 18px; height: 18px; color: var(--n400);
+            pointer-events: none; transition: color .2s;
+        }
+        .fi {
+            width: 100%;
+            padding: 12px 42px 12px 42px;
+            border: 1.5px solid var(--n200);
+            border-radius: var(--rs);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px; color: var(--n800);
+            background: var(--n0);
+            transition: all .2s;
+            outline: none;
+        }
+        .fi:focus { border-color: var(--p600); box-shadow: 0 0 0 3px rgba(13,148,136,.1); }
+        .fi:focus ~ i.ii { color: var(--p600); }
+        .fi::placeholder { color: var(--n400); }
+
+        .toggle-pw {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            background: none; border: none; cursor: pointer;
+            color: var(--n400); border-radius: var(--rs);
+        }
+        .toggle-pw:hover { color: var(--n600); }
+        .toggle-pw:focus-visible { outline: 2px solid var(--p600); outline-offset: 2px; }
+        .toggle-pw i { width: 18px; height: 18px; pointer-events: none; }
+
+        .btn-login {
+            width: 100%;
+            padding: 13px 24px;
+            background: linear-gradient(135deg, var(--p600), var(--p700));
+            color: #fff; border: none; border-radius: var(--rs);
+            font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+            cursor: pointer;
+            transition: all .25s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 2px 8px rgba(13,148,136,.25);
+            margin-top: 8px;
+        }
+        .btn-login:hover { background: linear-gradient(135deg, var(--p700), var(--p800)); box-shadow: 0 6px 20px rgba(13,148,136,.3); transform: translateY(-1px); }
+        .btn-login:active { transform: translateY(0); }
+        .btn-login:focus-visible { outline: 2px solid var(--a500); outline-offset: 2px; }
+        .btn-login i { width: 18px; height: 18px; }
+        .btn-login:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .divider { display: flex; align-items: center; gap: 16px; margin: 28px 0; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--n200); }
+        .divider span { font-size: 11px; color: var(--n400); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+
+        .form-alert {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            background: var(--danger-bg);
+            border: 1px solid var(--danger-border);
+            border-radius: var(--rs);
+            font-size: 13px; color: var(--danger-text);
+            animation: fu .3s ease-out;
+        }
+        .form-alert i { width: 18px; height: 18px; color: var(--danger); flex-shrink: 0; }
+
+        .footer-text { text-align: center; font-size: 13px; color: var(--n400); margin-top: 28px; }
+
+        .visually-hidden {
+            position: absolute; width: 1px; height: 1px;
+            padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
+
+        @media (max-width: 960px) {
+            .login-left { display: none; }
+            .login-right { width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .login-right { padding: 24px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .login-left::before, .login-left::after,
+            .brand-title span, .brand-desc, .pills, .login-form, .form-alert {
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-left" aria-hidden="true">
+        <div class="grid-dec"></div>
+        <div class="brand-area">
+            <div class="brand-ico-lg"><i data-lucide="graduation-cap"></i></div>
+            <h1 class="brand-title"><span>SHEDY</span><span> </span><span class="hl">School Management System</span></h1>
+            <p class="brand-desc">A modern, streamlined platform for managing student records, academic results, and institutional data — all in one place.</p>
+            <div class="pills">
+                <div class="pill"><i data-lucide="users"></i> Student Management</div>
+                <div class="pill"><i data-lucide="bar-chart-3"></i> Result Tracking</div>
+                <div class="pill"><i data-lucide="shield-check"></i> Role-Based Access</div>
+                <div class="pill"><i data-lucide="file-spreadsheet"></i> Ledger Reports</div>
+            </div>
+        </div>
+    </div>
+
+    <main class="login-right">
+        <div class="login-form">
+            <div class="lf-hdr">
+                <h1>Welcome back</h1>
+                <p>Sign in to your account to continue</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="form-alert" role="alert">
+                    <i data-lucide="alert-circle" aria-hidden="true"></i>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div id="jsAlert" class="form-alert" role="alert" hidden>
+                <i data-lucide="alert-circle" aria-hidden="true"></i>
+                <span id="jsAlertText"></span>
+            </div>
+
+            <form method="post" action="{% url 'user_login' %}" id="loginForm" novalidate>
+                {% csrf_token %}
+                <div class="fg">
+                    <label class="fl" for="email">Email Address</label>
+                    <div class="iw">
+                        <input type="email" id="email" name="email" class="fi"
+                               placeholder="you@school.edu" required autocomplete="email" autofocus>
+                        <i data-lucide="mail" class="ii" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <div class="fg">
+                    <label class="fl" for="password">Password</label>
+                    <div class="iw">
+                        <input type="password" id="password" name="password" class="fi"
+                               placeholder="Enter your password" required autocomplete="current-password">
+                        <i data-lucide="lock" class="ii" aria-hidden="true"></i>
+                        <button type="button" class="toggle-pw" id="togglePw" aria-pressed="false">
+                            <i data-lucide="eye" aria-hidden="true"></i>
+                            <span class="visually-hidden">Show password</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:center">
+                    <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                </div>
+
+                <button type="submit" class="btn-login" id="submitBtn">
+                    <i data-lucide="arrow-right" aria-hidden="true"></i> Sign In
+                </button>
+            </form>
+
+            <div class="divider"><span>Secure Access</span></div>
+            <p class="footer-text">Protected by role-based authentication</p>
+        </div>
+    </main>
+
+    <script>
+        function initIcons() {
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function showAlert(text) {
+            var alertBox = document.getElementById('jsAlert');
+            document.getElementById('jsAlertText').textContent = text;
+            alertBox.hidden = false;
+        }
+
+        function hideAlert() {
+            document.getElementById('jsAlert').hidden = true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            initIcons();
+
+            var toggleBtn = document.getElementById('togglePw');
+            var pwInput = document.getElementById('password');
+            toggleBtn.addEventListener('click', function () {
+                var isHidden = pwInput.type === 'password';
+                pwInput.type = isHidden ? 'text' : 'password';
+                toggleBtn.setAttribute('aria-pressed', String(isHidden));
+                toggleBtn.innerHTML = isHidden
+                    ? '<i data-lucide="eye-off" aria-hidden="true"></i><span class="visually-hidden">Hide password</span>'
+                    : '<i data-lucide="eye" aria-hidden="true"></i><span class="visually-hidden">Show password</span>';
+                initIcons();
+            });
+
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                hideAlert();
+                var captchaOk = true;
+                try {
+                    captchaOk = typeof grecaptcha !== 'undefined' && !!grecaptcha.getResponse();
+                } catch (err) {
+                    captchaOk = false;
+                }
+                if (!captchaOk) {
+                    e.preventDefault();
+                    showAlert('Please complete the captcha before signing in.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

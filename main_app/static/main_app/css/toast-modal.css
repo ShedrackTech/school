@@ -1,0 +1,33 @@
+/* ============================================================
+   TOAST-MODAL.CSS
+   Toast notifications, modal dialogs, inline notice boxes,
+   and the click-blocking overlay.
+   ============================================================ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;backdrop-filter:blur(4px)}
+.overlay.on{display:block}
+
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:var(--rm);background:var(--n0);border:1px solid var(--n200);box-shadow:var(--sh-xl);font-size:13px;font-weight:500;color:var(--n800);animation:tin .35s ease-out;min-width:300px;max-width:420px}
+.toast.out{animation:tout .3s ease-in forwards}
+.toast-ico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toast-ico i{width:16px;height:16px}
+.toast.success .toast-ico{background:#ecfdf5;color:#059669}
+.toast.warning .toast-ico{background:#fffbeb;color:#d97706}
+.toast.error .toast-ico{background:#fef2f2;color:#dc2626}
+.toast.info .toast-ico{background:#f0f9ff;color:#0284c7}
+.toast-x{margin-left:auto;background:none;border:none;color:var(--n400);cursor:pointer;padding:4px;border-radius:4px;transition:all var(--tf)}
+.toast-x:hover{background:var(--n100);color:var(--n600)}
+.toast-x i{width:14px;height:14px}
+@keyframes tin{from{opacity:0;transform:translateX(40px) scale(.95)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes tout{from{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(40px) scale(.95)}}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);animation:mfi .2s ease}
+.modal-box{background:var(--n0);border-radius:var(--rl);padding:32px;max-width:420px;width:90%;box-shadow:var(--sh-xl);animation:msi .25s ease}
+@keyframes mfi{from{opacity:0}to{opacity:1}}
+@keyframes msi{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+
+.notice{padding:16px 20px;border-radius:var(--rm);display:flex;align-items:flex-start;gap:12px}
+.notice.info{background:var(--p50);border:1px solid var(--p100);color:var(--p700)}
+.notice.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.notice i{width:18px;height:18px;flex-shrink:0;margin-top:1px}
+.notice p{font-size:13px;line-height:1.6}

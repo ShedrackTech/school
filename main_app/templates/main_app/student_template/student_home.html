@@ -1,0 +1,31 @@
+{% extends 'main_app/student_template/student_base.html' %}
+{% block title %}Student Dashboard — EduLedger{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Student Dashboard</h1><p class="pg-sub">Welcome back, {{ request.user.first_name }} {{ request.user.last_name }}</p></div>
+<div class="stats">
+    <div class="st tl"><div class="st-top"><div class="st-ico"><i data-lucide="book-open"></i></div></div><div class="st-val">{{ subject_count|default_if_none:"--" }}</div><div class="st-lbl">Enrolled Subjects</div></div>
+    <div class="st am"><div class="st-top"><div class="st-ico"><i data-lucide="percent"></i></div></div><div class="st-val">{{ overall_percentage|default_if_none:"--" }}{% if overall_percentage %}%{% endif %}</div><div class="st-lbl">Overall Percentage</div></div>
+    <div class="st sk"><div class="st-top"><div class="st-ico"><i data-lucide="check-circle"></i></div></div><div class="st-val">{{ results_published|default_if_none:"--" }}</div><div class="st-lbl">Results Published</div></div>
+    <div class="st rs"><div class="st-top"><div class="st-ico"><i data-lucide="calendar-check"></i></div></div><div class="st-val">{{ attendance_pct|default_if_none:"--" }}{% if attendance_pct %}%{% endif %}</div><div class="st-lbl">Attendance</div></div>
+</div>
+<div class="card">
+    <div class="card-hd"><h3 class="card-t">Latest Results</h3><a href="{% url 'student_view_result' %}" class="card-act">View All <i data-lucide="arrow-right"></i></a></div>
+    <div class="card-bd" style="padding:0">
+        {% if results %}
+        <table class="lt"><thead><tr><th>Subject</th><th>Test</th><th>Exam</th><th>Total</th><th>Grade</th><th>Status</th></tr></thead>
+        <tbody>{% for r in results|slice:":5" %}<tr>
+            <td>{{ r.subject }}</td>
+            <td>{{ r.test }}/30</td>
+            <td>{{ r.exam }}/70</td>
+            <td><strong>{{ r.total }}/100</strong></td>
+            <td>{% if r.total >= 80 %}<span style="font-weight:700;color:var(--p600)">A+</span>{% elif r.total >= 60 %}<span style="font-weight:700;color:var(--p600)">A</span>{% elif r.total >= 40 %}<span style="font-weight:700;color:var(--a600)">B</span>{% else %}<span style="font-weight:700;color:var(--danger)">F</span>{% endif %}</td>
+            <td>{% if r.passed %}<span class="badge ok"><span class="dot"></span> Pass</span>{% else %}<span class="badge no"><span class="dot"></span> Fail</span>{% endif %}</td>
+        </tr>{% endfor %}</tbody></table>
+        {% else %}
+        <div class="empty"><div class="empty-ico"><i data-lucide="bar-chart-3"></i></div><h3>No results yet</h3><p>Results will appear here once published</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

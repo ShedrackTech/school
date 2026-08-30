@@ -1,0 +1,38 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Edit Student — EduLedger{% endblock %}
+{% block breadcrumb %}Edit Student{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Edit Student</h1><p class="pg-sub">Update student enrollment details</p></div>
+<div class="card" style="max-width:720px">
+    <div class="card-hd"><h3 class="card-t">Student Information</h3></div>
+    <div class="card-bd">
+        <form method="post">{% csrf_token %}
+            <div class="section-hd">Account Details</div>
+            <div class="fr">
+                <div class="fg"><label class="fl">First Name</label><input type="text" name="first_name" class="fi" value="{{ student.admin.first_name }}" required></div>
+                <div class="fg"><label class="fl">Last Name</label><input type="text" name="last_name" class="fi" value="{{ student.admin.last_name }}" required></div>
+            </div>
+            <div class="fr">
+                <div class="fg"><label class="fl">Email Address</label><input type="email" name="email" class="fi" value="{{ student.admin.email }}" required></div>
+                <div class="fg"><label class="fl">Username</label><input type="text" name="username" class="fi" value="{{ student.admin.username }}" required></div>
+            </div>
+            <div class="section-hd">Enrollment Details</div>
+            <div class="fr">
+                <div class="fg"><label class="fl">Course</label><select name="course" class="fs" required><option value="">Select course</option>{% for c in courses %}<option value="{{ c.id }}" {% if student.course_id.id == c.id %}selected{% endif %}>{{ c.course_name }}</option>{% endfor %}</select></div>
+                <div class="fg"><label class="fl">Session</label><select name="session" class="fs" required><option value="">Select session</option>{% for s in sessions %}<option value="{{ s.id }}" {% if student.session_id.id == s.id %}selected{% endif %}>{{ s.session_start }} - {{ s.session_end }}</option>{% endfor %}</select></div>
+            </div>
+            <div class="section-hd">Profile Details</div>
+            <div class="fr">
+                <div class="fg"><label class="fl">Gender</label><select name="gender" class="fs"><option value="">Select gender</option><option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option><option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option><option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option></select></div>
+                <div class="fg"><label class="fl">Phone Number</label><input type="tel" name="phone" class="fi" value="{{ student.phone|default:'' }}"></div>
+            </div>
+            <div class="fg"><label class="fl">Address</label><textarea name="address" class="fta" rows="3">{{ student.address|default:'' }}</textarea></div>
+            <div style="display:flex;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--n100)">
+                <button type="submit" class="btn btn-p"><i data-lucide="save"></i> Update Student</button>
+                <a href="{% url 'manage_student' %}" class="btn btn-s">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

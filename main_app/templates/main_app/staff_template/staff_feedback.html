@@ -1,0 +1,20 @@
+{% extends 'main_app/staff_template/staff_base.html' %}
+{% block title %}Feedback — EduLedger{% endblock %}
+{% block breadcrumb %}Feedback{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Submit Feedback</h1><p class="pg-sub">Share your thoughts with the administration</p></div>
+<div class="card" style="max-width:720px">
+    <div class="card-hd"><h3 class="card-t">Your Feedback</h3></div>
+    <div class="card-bd">
+        <div class="notice info" style="margin-bottom:24px"><i data-lucide="message-circle"></i><p>Your feedback is sent directly to the administrator. Be specific and constructive.</p></div>
+        <form method="post">{% csrf_token %}
+            <div class="fg"><label class="fl">Feedback Message</label><textarea name="feedback" class="fta" rows="6" placeholder="Describe your feedback, suggestion, or concern..." required></textarea></div>
+            <div style="display:flex;gap:12px;margin-top:28px">
+                <button type="submit" class="btn btn-p"><i data-lucide="send"></i> Submit Feedback</button>
+                <a href="{% url 'staff_home' %}" class="btn btn-s">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

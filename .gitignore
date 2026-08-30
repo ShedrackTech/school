@@ -1,0 +1,14 @@
+.vscode
+.idea
+__pycache__/
+*.pyc
+media/
+db.sqlite3
+.env
+firebase-service-account.json
+Lib/
+Scripts/
+Include/
+pyvenv.cfg
+python
+env/

@@ -1,0 +1,51 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Manage Sessions — EduLedger{% endblock %}
+{% block breadcrumb %}Sessions{% endblock %}
+{% block page_content %}
+<div class="pg-hdr" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div><h1 class="pg-title">Manage Sessions</h1><p class="pg-sub">{{ sessions|length }} session{{ sessions|length|pluralize }}</p></div>
+    <a href="{% url 'add_session' %}" class="btn btn-p"><i data-lucide="plus"></i> Add Session</a>
+</div>
+<div class="card"><div class="card-bd" style="padding:0">
+    {% if sessions %}
+    <table class="lt"><thead><tr><th>Session Start</th><th>Session End</th><th>Actions</th></tr></thead>
+    <tbody>{% for s in sessions %}<tr>
+        <td style="font-weight:600;color:var(--n900)">{{ s.start_year|date:"M d, Y" }}</td>
+        <td>{{ s.end_year|date:"M d, Y" }}</td>
+        <td><div class="act-btns"><a href="{% url 'edit_session' s.id %}" class="ibtn" title="Edit"><i data-lucide="pencil"></i></a><button type="button" class="ibtn del del-btn" data-id="{{ s.id }}" data-name="{{ s.start_year|date:'Y-m-d' }} - {{ s.end_year|date:'Y-m-d' }}" title="Delete"><i data-lucide="trash-2"></i></button></div></td>
+    </tr>{% endfor %}</tbody></table>
+    {% else %}
+    <div class="empty"><div class="empty-ico"><i data-lucide="calendar"></i></div><h3>No sessions yet</h3><p>Create your first academic session</p><a href="{% url 'add_session' %}" class="btn btn-p" style="margin-top:20px"><i data-lucide="plus"></i> Add Session</a></div>
+    {% endif %}
+</div></div>
+<div class="modal-bg" id="delModal" style="display:none" data-delete-url="{% url 'delete_session' 0 %}">
+    <div class="modal-box">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px"><div style="width:44px;height:44px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i data-lucide="alert-triangle" style="width:22px;height:22px;color:#dc2626"></i></div><div><h3 style="font-size:16px">Delete Session</h3><p style="font-size:13px;color:var(--n500);margin-top:2px">This action cannot be undone</p></div></div>
+        <p style="font-size:14px;color:var(--n600);margin-bottom:24px">Are you sure you want to delete <strong id="delName"></strong>?</p>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button type="button" onclick="document.getElementById('delModal').style.display='none'" class="btn btn-s">Cancel</button>
+            <form id="delForm" method="post" style="display:inline">{% csrf_token %}<button type="submit" class="btn btn-d"><i data-lucide="trash-2"></i> Delete</button></form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+var delModal = document.getElementById('delModal');
+var delForm = document.getElementById('delForm');
+var delName = document.getElementById('delName');
+var baseDeleteUrl = delModal.getAttribute('data-delete-url');
+
+document.querySelectorAll('.del-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var name = btn.getAttribute('data-name');
+        delName.textContent = name;
+        delForm.action = baseDeleteUrl.replace('0', id);
+        delModal.style.display = 'flex';
+        lucide.createIcons();
+    });
+});
+</script>
+{% endblock %}

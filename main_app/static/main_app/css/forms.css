@@ -1,0 +1,38 @@
+/* ============================================================
+   FORMS.CSS
+   Form groups, labels, inputs/selects/textareas, errors, hints.
+   ============================================================ */
+.fg{margin-bottom:20px}
+.fl{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--n600);margin-bottom:8px}
+.fi,.fs,.fta{width:100%;padding:11px 14px;border:2px solid var(--n300);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--n800);background:var(--n0);transition:border-color var(--tf),box-shadow var(--tb),background var(--tb);outline:none}
+.fi::placeholder{color:var(--n400)}
+.fta{resize:vertical;min-height:100px}
+.fs{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.fe{font-size:12px;color:var(--danger);margin-top:6px;display:flex;align-items:center;gap:4px}
+.fe i{width:13px;height:13px}
+.fh{font-size:12px;color:var(--n400);margin-top:6px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+/* Hover + focus states */
+.fi:hover,.fs:hover,.fta:hover{border-color:var(--p400);box-shadow:0 2px 8px rgba(var(--p500-rgb),.08)}
+.fi:focus,.fta:focus{
+    border-color:transparent;
+    background:
+        linear-gradient(#fff,#fff) padding-box,
+        linear-gradient(135deg,var(--p400),var(--p600),var(--a500)) border-box;
+    background-size:100% 100%,300% 300%;
+    animation:borderFlow 3s linear infinite;
+    box-shadow:0 0 0 4px rgba(var(--p500-rgb),.12);
+}
+@keyframes borderFlow{
+    0%{background-position:0 0,0% 50%}
+    50%{background-position:0 0,100% 50%}
+    100%{background-position:0 0,0% 50%}
+}
+.fs:focus{border-color:var(--p500);box-shadow:0 0 0 4px rgba(var(--p500-rgb),.12)}
+
+.fi:focus-visible,.fs:focus-visible,.fta:focus-visible{outline:2px solid var(--p500);outline-offset:2px}
+
+@media(max-width:1024px){
+    .fr{grid-template-columns:1fr}
+}

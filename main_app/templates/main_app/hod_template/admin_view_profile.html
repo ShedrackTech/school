@@ -1,0 +1,58 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}My Profile — EduLedger{% endblock %}
+{% block breadcrumb %}My Profile{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">My Profile</h1><p class="pg-sub">Your account information</p></div>
+<div class="g2">
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Edit Account Details</h3></div>
+        <div class="card-bd">
+            <div style="display:flex;align-items:center;gap:20px;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--n100)">
+                {% if request.user.profile_pic %}
+                <img src="{{ request.user.profile_pic.url }}" alt="Profile photo" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0">
+                {% else %}
+                <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--p500),var(--p800));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;color:#fff;flex-shrink:0">{{ request.user.first_name.0 }}{{ request.user.last_name.0 }}</div>
+                {% endif %}
+                <div><h3 style="font-size:20px;font-weight:700">{{ request.user.first_name }} {{ request.user.last_name }}</h3><p style="font-size:13px;color:var(--n500);margin-top:4px">Administrator</p></div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="fr">
+                    <div class="fg"><label class="fl">First Name</label><input type="text" name="first_name" class="fi" value="{{ request.user.first_name }}" required></div>
+                    <div class="fg"><label class="fl">Last Name</label><input type="text" name="last_name" class="fi" value="{{ request.user.last_name }}" required></div>
+                </div>
+                <div class="fr">
+                    <div class="fg"><label class="fl">Email Address</label><input type="email" name="email" class="fi" value="{{ request.user.email }}" required></div>
+                    <div class="fg"><label class="fl">Profile Photo</label><input type="file" name="profile_pic" class="fi" accept="image/*"><p class="fh">Leave empty to keep current photo</p></div>
+                </div>
+                <div class="fr">
+                    <div class="fg"><label class="fl">Gender</label><select name="gender" class="fs"><option value="M" {% if request.user.gender == "M" %}selected{% endif %}>Male</option><option value="F" {% if request.user.gender == "F" %}selected{% endif %}>Female</option></select></div>
+                    <div class="fg"><label class="fl">Address</label><input type="text" name="address" class="fi" value="{{ request.user.address }}"></div>
+                </div>
+                <div class="fr">
+                    <div class="fg"><label class="fl">New Password</label><input type="password" name="password" class="fi" placeholder="Leave blank to keep current password"></div>
+                </div>
+                {% if form.errors %}
+                <div class="notice" style="margin-top:16px"><p style="color:#dc2626;font-size:13px">{{ form.errors }}</p></div>
+                {% endif %}
+                <div style="display:flex;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--n100)">
+                    <button type="submit" class="btn btn-p"><i data-lucide="save"></i> Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">System Info</h3></div>
+        <div class="card-bd">
+            <dl style="display:grid;grid-template-columns:auto 1fr;gap:12px 24px;font-size:14px">
+                <dt style="color:var(--n500);font-weight:500">User Type</dt><dd style="margin:0"><span class="badge ok"><span class="dot"></span> Administrator</span></dd>
+                <dt style="color:var(--n500);font-weight:500">Status</dt><dd style="margin:0">{% if request.user.is_active %}<span class="badge ok"><span class="dot"></span> Active</span>{% else %}<span class="badge no"><span class="dot"></span> Inactive</span>{% endif %}</dd>
+                <dt style="color:var(--n500);font-weight:500">Joined</dt><dd style="color:var(--n800);margin:0">{{ request.user.date_joined|date:"M d, Y" }}</dd>
+                <dt style="color:var(--n500);font-weight:500">Last Login</dt><dd style="color:var(--n800);margin:0">{{ request.user.last_login|date:"M d, Y H:i"|default:"—" }}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

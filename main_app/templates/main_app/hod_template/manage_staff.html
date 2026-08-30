@@ -1,0 +1,68 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Manage Staff — EduLedger{% endblock %}
+{% block breadcrumb %}Manage Staff{% endblock %}
+{% block page_content %}
+<div class="pg-hdr" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div><h1 class="pg-title">Manage Staff</h1><p class="pg-sub">{{ staffs|length }} staff member{{ staffs|length|pluralize }}</p></div>
+    <a href="{% url 'add_staff' %}" class="btn btn-p"><i data-lucide="plus"></i> Add Staff</a>
+</div>
+<div class="card">
+    <div class="card-bd" style="padding:0">
+        {% if staffs %}
+        <table class="lt">
+            <thead><tr><th>Staff Member</th><th>Course</th><th>Address</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>{% for s in staffs %}<tr>
+                <td>
+                    <div class="av">
+                        {% if s.admin.profile_pic %}
+                        <img src="{{ s.admin.profile_pic.url }}" alt="" class="av-img" style="object-fit:cover">
+                        {% elif s.admin.first_name %}
+                        <div class="av-img">{{ s.admin.first_name.0 }}{{ s.admin.last_name.0 }}</div>
+                        {% else %}
+                        <div class="av-img">{{ s.admin.email.0|upper }}</div>
+                        {% endif %}
+                        <div>
+                            <div class="av-name">{{ s.admin.first_name }} {{ s.admin.last_name }}</div>
+                            <div class="av-sub">{{ s.admin.email }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ s.course.name|default:"—" }}</td>
+                <td>{{ s.admin.address|truncatewords:5|default:"—" }}</td>
+                <td>{% if s.admin.is_active %}<span class="badge ok"><span class="dot"></span> Active</span>{% else %}<span class="badge no"><span class="dot"></span> Inactive</span>{% endif %}</td>
+                <td><div class="act-btns"><a href="{% url 'edit_staff' s.id %}" class="ibtn" title="Edit"><i data-lucide="pencil"></i></a><button type="button" class="ibtn del del-btn" data-url="{% url 'delete_staff' s.id %}" data-name="{{ s.admin.first_name }} {{ s.admin.last_name }}" title="Delete"><i data-lucide="trash-2"></i></button></div></td>
+            </tr>{% endfor %}</tbody>
+        </table>
+        {% else %}
+        <div class="empty"><div class="empty-ico"><i data-lucide="users"></i></div><h3>No staff members</h3><p>Add your first staff member</p><a href="{% url 'add_staff' %}" class="btn btn-p" style="margin-top:20px"><i data-lucide="plus"></i> Add Staff</a></div>
+        {% endif %}
+    </div>
+</div>
+<div class="modal-bg" id="delModal" style="display:none">
+    <div class="modal-box">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px"><div style="width:44px;height:44px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i data-lucide="alert-triangle" style="width:22px;height:22px;color:#dc2626"></i></div><div><h3 style="font-size:16px">Delete Staff Member</h3><p style="font-size:13px;color:var(--n500);margin-top:2px">This action cannot be undone</p></div></div>
+        <p style="font-size:14px;color:var(--n600);margin-bottom:24px">Are you sure you want to delete <strong id="delName"></strong>?</p>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button type="button" onclick="document.getElementById('delModal').style.display='none'" class="btn btn-s">Cancel</button>
+            <form id="delForm" method="post" style="display:inline">{% csrf_token %}<button type="submit" class="btn btn-d"><i data-lucide="trash-2"></i> Delete</button></form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+var delModal = document.getElementById('delModal');
+var delForm = document.getElementById('delForm');
+var delName = document.getElementById('delName');
+
+document.querySelectorAll('.del-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        delName.textContent = btn.getAttribute('data-name');
+        delForm.action = btn.getAttribute('data-url');
+        delModal.style.display = 'flex';
+        lucide.createIcons();
+    });
+});
+</script>
+{% endblock %}

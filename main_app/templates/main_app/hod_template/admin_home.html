@@ -1,0 +1,46 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Admin Dashboard — EduLedger{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+{% block page_content %}
+<div class="pg-hdr">
+    <h1 class="pg-title">Admin Dashboard</h1>
+    <p class="pg-sub">Overview of your institution's key metrics</p>
+</div>
+<div class="stats">
+    <div class="st tl"><div class="st-top"><div class="st-ico"><i data-lucide="users"></i></div><div class="st-trend up"><i data-lucide="trending-up"></i> 12%</div></div><div class="st-val">{{ total_staff|default:"--" }}</div><div class="st-lbl">Total Staff</div></div>
+    <div class="st am"><div class="st-top"><div class="st-ico"><i data-lucide="graduation-cap"></i></div><div class="st-trend up"><i data-lucide="trending-up"></i> 8%</div></div><div class="st-val">{{ total_students|default:"--" }}</div><div class="st-lbl">Total Students</div></div>
+    <div class="st sk"><div class="st-top"><div class="st-ico"><i data-lucide="book-open"></i></div></div><div class="st-val">{{ total_course|default:"--" }}</div><div class="st-lbl">Courses</div></div>
+    <div class="st rs"><div class="st-top"><div class="st-ico"><i data-lucide="file-text"></i></div></div><div class="st-val">{{ total_subject|default:"--" }}</div><div class="st-lbl">Subjects</div></div>
+</div>
+<div class="g2">
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Recent Students</h3><a href="{% url 'manage_student' %}" class="card-act">View All <i data-lucide="arrow-right"></i></a></div>
+        <div class="card-bd" style="padding:0">
+            {% if students %}
+            <table class="lt"><thead><tr><th>Student</th><th>Course</th><th>Session</th><th>Status</th></tr></thead>
+            <tbody>{% for s in students|slice:":5" %}<tr>
+                <td><div class="av"><div class="av-img">{{ s.admin.first_name.0 }}{{ s.admin.last_name.0 }}</div><div><div class="av-name">{{ s.admin.first_name }} {{ s.admin.last_name }}</div><div class="av-sub">{{ s.admin.email }}</div></div></div></td>
+                <td>{{ s.course.name|default:"—" }}</td>
+                <td>{{ s.session.start_year|date:"M Y"|default:"—" }} - {{ s.session.end_year|date:"M Y"|default:"" }}</td>
+                <td><span class="badge ok"><span class="dot"></span> Active</span></td>
+            </tr>{% endfor %}</tbody></table>
+            {% else %}
+            <div class="empty"><div class="empty-ico"><i data-lucide="users"></i></div><h3>No students yet</h3><p>Add your first student</p></div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Quick Actions</h3></div>
+        <div class="card-bd">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <a href="{% url 'add_staff' %}" class="btn btn-s" style="flex-direction:column;padding:20px 16px;gap:10px;border-radius:var(--rl);text-align:center"><i data-lucide="user-plus" style="width:24px;height:24px;color:var(--p600)"></i><span>Add Staff</span></a>
+                <a href="{% url 'add_student' %}" class="btn btn-s" style="flex-direction:column;padding:20px 16px;gap:10px;border-radius:var(--rl);text-align:center"><i data-lucide="user-round-plus" style="width:24px;height:24px;color:var(--a600)"></i><span>Add Student</span></a>
+                <a href="{% url 'add_course' %}" class="btn btn-s" style="flex-direction:column;padding:20px 16px;gap:10px;border-radius:var(--rl);text-align:center"><i data-lucide="book-plus" style="width:24px;height:24px;color:#0ea5e9"></i><span>Add Course</span></a>
+                <a href="{% url 'add_subject' %}" class="btn btn-s" style="flex-direction:column;padding:20px 16px;gap:10px;border-radius:var(--rl);text-align:center"><i data-lucide="file-plus" style="width:24px;height:24px;color:#f43f5e"></i><span>Add Subject</span></a>
+            </div>
+            <div class="notice info" style="margin-top:28px"><i data-lucide="info"></i><p>Ensure all records are up to date. Use the sidebar to manage staff, students, courses, and subjects.</p></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

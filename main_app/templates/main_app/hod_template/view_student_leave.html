@@ -1,0 +1,21 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Student Leaves — EduLedger{% endblock %}
+{% block breadcrumb %}Student Leaves{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Student Leave Requests</h1><p class="pg-sub">{{ leaves|length }} request{{ leaves|length|pluralize }}</p></div>
+{% if leaves %}
+<div class="card"><div class="card-bd" style="padding:0">
+<table class="lt"><thead><tr><th>Student</th><th>Leave Date</th><th>Reason</th><th>Status</th><th>Submitted</th></tr></thead>
+<tbody>{% for l in leaves %}<tr>
+    <td><div class="av"><div class="av-img">{{ l.student_id.admin.first_name.0 }}{{ l.student_id.admin.last_name.0 }}</div><div><div class="av-name">{{ l.student_id.admin.first_name }} {{ l.student_id.admin.last_name }}</div><div class="av-sub">{{ l.student_id.admin.email }}</div></div></div></td>
+    <td>{{ l.leave_date|date:"M d, Y" }}</td>
+    <td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.message }}</td>
+    <td>{% if l.status == 1 %}<span class="badge ok"><span class="dot"></span> Approved</span>{% elif l.status == 0 %}<span class="badge wait"><span class="dot"></span> Pending</span>{% else %}<span class="badge no"><span class="dot"></span> Rejected</span>{% endif %}</td>
+    <td>{{ l.created_at|date:"M d, Y" }}</td>
+</tr>{% endfor %}</tbody></table>
+</div></div>
+{% else %}
+<div class="card"><div class="card-bd"><div class="empty"><div class="empty-ico"><i data-lucide="calendar-off"></i></div><h3>No leave requests</h3><p>Student leave requests will appear here</p></div></div></div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

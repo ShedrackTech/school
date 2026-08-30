@@ -1,0 +1,23 @@
+/* ============================================================
+   VARIABLES.CSS
+   Root design tokens: colors, spacing, shadows, transitions.
+   Role/page theme overrides live in themes.css and load AFTER
+   this file so they can override these defaults.
+   ============================================================ */
+:root{
+    --sw:270px;--hh:70px;
+    --p50:#f0f9ff;--p100:#e0f2fe;--p200:#bae6fd;--p300:#7dd3fc;--p400:#38bdf8;--p500:#0ea5e9;
+    --p600:#0284c7;--p700:#0369a1;--p800:#075985;--p900:#0c4a6e;--p950:#082f49;
+    --p500-rgb:2,132,199;--bg1-rgb:83,72,154;--bg2-rgb:69,69,141; /* themed: rgb triplets for rgba() use */
+    --a400:#fbbf24;--a500:#f59e0b;--a600:#d97706;
+    --n0:#fff;--n50:#d6dde4;--n100:#f1f5f9;--n200:#e2e8f0;--n300:#cbd5e1;--n400:#94a3b8;
+    --n500:#64748b;--n600:#475569;--n700:#334155;--n800:#1e293b;--n900:#0f172a;
+    --danger:#ef4444;--success:#10b981;--info:#06b6d4;
+    --sb-bg:linear-gradient(180deg,#0f172a,#1e293b 50%,#0f172a);
+    --sb-txt:#94a3b8;--sb-act:#fff;--sb-hover:rgba(var(--p500-rgb),.14);--sb-active:rgba(var(--p500-rgb),.24);
+    --sb-border:rgba(148,163,184,.08);
+    --sh-lg:0 10px 15px -3px rgba(0,0,0,.06),0 4px 6px -4px rgba(0,0,0,.04);
+    --sh-xl:0 20px 25px -5px rgba(0,0,0,.08),0 8px 10px -6px rgba(0,0,0,.04);
+    --tf:150ms cubic-bezier(.4,0,.2,1);--tb:250ms cubic-bezier(.4,0,.2,1);--ts:400ms cubic-bezier(.4,0,.2,1);
+    --rs:6px;--rm:10px;--rl:14px
+}

@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}School{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.js"></script>
+
+    <!-- Order matters: variables/base first, themes.css last so it can
+         override role/page colors defined earlier. -->
+    <link rel="stylesheet" href="{% static 'main_app/css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/buttons.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/toast-modal.css' %}">
+    <link rel="stylesheet" href="{% static 'main_app/css/themes.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<!-- Theme is picked automatically from the logged-in user's role.
+     A child page can add its own palette class via the body_class block. -->
+<body class="{% if request.user.user_type == '1' %}theme-admin{% elif request.user.user_type == '2' %}theme-staff{% else %}theme-student{% endif %} {% block body_class %}{% endblock %}" data-csrf="{{ csrf_token }}">
+    <div class="overlay" id="ov"></div>
+
+    <aside class="sidebar" id="sb">
+        <div class="sb-brand">
+            <h2><span class="ico"><i data-lucide="graduation-cap"></i></span>SHEDY</h2>
+            <p>School Management System</p>
+        </div>
+        <nav class="sb-nav">{% block sidebar_nav %}{% endblock %}</nav>
+        <div class="sb-foot">
+            <div class="sb-user">
+                <div class="sb-avatar">{{ request.user.email.0|upper }}</div>
+                <div class="sb-info">
+                    <div class="sb-name">{{ request.user.email }}</div>
+                    <div class="sb-role">{% if request.user.user_type == '1' %}Administrator{% elif request.user.user_type == '2' %}Staff{% elif request.user.user_type == '3' %}Student{% endif %}</div>
+                </div>
+                <form method="post" action="{% url 'user_logout' %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="sb-logout" title="Logout"><i data-lucide="log-out"></i></button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <header class="top-hdr">
+            <div class="hdr-left">
+                <button class="mob-btn" id="mobBtn"><i data-lucide="menu"></i></button>
+                <div class="crumb">
+                    <a href="{% if request.user.user_type == '1' %}{% url 'admin_home' %}{% elif request.user.user_type == '2' %}{% url 'staff_home' %}{% else %}{% url 'student_home' %}{% endif %}">Home</a>
+                    <span class="sep">/</span>
+                    <span class="cur">{% block breadcrumb %}Dashboard{% endblock %}</span>
+                </div>
+            </div>
+            <div class="hdr-right">
+                <button class="hdr-btn" title="Notifications"><i data-lucide="bell"></i><span class="dot"></span></button>
+                <button class="hdr-btn" title="Settings"><i data-lucide="settings"></i></button>
+            </div>
+        </header>
+        <main class="pg">{% block page_content %}{% endblock %}</main>
+    </div>
+
+    <div class="toast-wrap" id="toasts"></div>
+
+    <div id="msgData" style="display:none">
+        {% for m in messages %}<span class="msg-item" data-tags="{{ m.tags }}" data-msg="{{ m.message }}"></span>{% endfor %}
+    </div>
+
+    <script>
+    lucide.createIcons();
+    var sb=document.getElementById('sb'),ov=document.getElementById('ov'),mb=document.getElementById('mobBtn');
+    if(mb){mb.onclick=function(){sb.classList.toggle('open');ov.classList.toggle('on')}}
+    if(ov){ov.onclick=function(){sb.classList.remove('open');ov.classList.remove('on')}}
+    document.querySelectorAll('.nav-item').forEach(function(el){
+        if(el.getAttribute('href')===window.location.pathname){
+            document.querySelectorAll('.nav-item').forEach(function(i){i.classList.remove('active')});
+            el.classList.add('active');
+        }
+    });
+    (function(){
+        var items=document.querySelectorAll('#msgData .msg-item');
+        var iconMap={success:'check',warning:'alert-triangle',error:'x',info:'info'};
+        items.forEach(function(el){
+            var type=el.getAttribute('data-tags')||'info';
+            var msg=el.getAttribute('data-msg');
+            var t=document.createElement('div');t.className='toast '+type;
+            t.innerHTML='<div class="toast-ico"><i data-lucide="'+(iconMap[type]||'info')+'"></i></div><span>'+msg+'</span><button class="toast-x" onclick="this.parentElement.classList.add(\'out\');setTimeout(function(){this.parentElement.remove()}.bind(this),300)"><i data-lucide="x"></i></button>';
+            document.getElementById('toasts').appendChild(t);
+            lucide.createIcons({nodes:[t]});
+            (function(el2){setTimeout(function(){if(el2.parentElement){el2.classList.add('out');setTimeout(function(){el2.remove()},300)}},4000)})(t);
+        });
+    })();
+    function showToast(type,msg){
+        var iconMap={success:'check',warning:'alert-triangle',error:'x',info:'info'};
+        var t=document.createElement('div');t.className='toast '+type;
+        t.innerHTML='<div class="toast-ico"><i data-lucide="'+(iconMap[type]||'info')+'"></i></div><span>'+msg+'</span><button class="toast-x" onclick="this.parentElement.classList.add(\'out\');setTimeout(function(){this.parentElement.remove()}.bind(this),300)"><i data-lucide="x"></i></button>';
+        document.getElementById('toasts').appendChild(t);
+        lucide.createIcons({nodes:[t]});
+        setTimeout(function(){if(t.parentElement){t.classList.add('out');setTimeout(function(){t.remove()},300)}},4000);
+    }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

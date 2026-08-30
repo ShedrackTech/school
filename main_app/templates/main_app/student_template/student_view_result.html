@@ -1,0 +1,60 @@
+{% extends 'main_app/student_template/student_base.html' %}
+{% block title %}My Results — EduLedger{% endblock %}
+{% block breadcrumb %}My Results{% endblock %}
+{% block extra_css %}
+<style>
+.grade-a{color:var(--p600)}
+.grade-b{color:var(--p600)}
+.grade-c{color:var(--a600)}
+.grade-f{color:var(--danger)}
+.pbar{height:6px;background:var(--n100);border-radius:3px;overflow:hidden;width:0;transition:width .6s ease}
+[data-pct]{width:attr(data-pct)}
+</style>
+{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">My Results</h1><p class="pg-sub">Academic performance across all subjects</p></div>
+{% if results %}
+<div class="stats" style="margin-bottom:24px">
+    <div class="st tl"><div class="st-top"><div class="st-ico"><i data-lucide="sigma"></i></div></div><div class="st-val">{{ total_marks|default:"--" }}</div><div class="st-lbl">Total Marks</div></div>
+    <div class="st am"><div class="st-top"><div class="st-ico"><i data-lucide="percent"></i></div></div><div class="st-val">{{ percentage|default:"--" }}%</div><div class="st-lbl">Percentage</div></div>
+    <div class="st sk"><div class="st-top"><div class="st-ico"><i data-lucide="trophy"></i></div></div><div class="st-val">{{ highest|default:"--" }}</div><div class="st-lbl">Highest</div></div>
+    <div class="st rs"><div class="st-top"><div class="st-ico"><i data-lucide="target"></i></div></div><div class="st-val">{{ lowest|default:"--" }}</div><div class="st-lbl">Lowest</div></div>
+</div>
+<div class="card">
+    <div class="card-hd"><h3 class="card-t">Subject-wise Results</h3></div>
+    <div class="card-bd" style="padding:0">
+        <table class="lt"><thead><tr><th>Subject</th><th>Test (30)</th><th>Exam (70)</th><th>Total (100)</th><th>Grade</th><th>Status</th></tr></thead>
+        <tbody>{% for r in results %}{% with total=r.test|add:r.exam %}
+        <tr>
+            <td style="font-weight:500;color:var(--n800)">{{ r.subject_id.subject_name }}</td>
+            <td>{{ r.test }}</td>
+            <td>{{ r.exam }}</td>
+            <td>
+                <div style="display:flex;align-items:center;gap:12px">
+                    <strong>{{ total }}</strong>
+                    <div class="pbar" data-pct="{{ total }}"></div>
+                </div>
+            </td>
+            <td>
+                {% if total >= 80 %}<span class="grade-a">A+</span>
+                {% elif total >= 60 %}<span class="grade-b">A</span>
+                {% elif total >= 40 %}<span class="grade-c">B</span>
+                {% else %}<span class="grade-f">F</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if total >= 40 %}
+                <span class="badge ok"><span class="dot"></span> Pass</span>
+                {% else %}
+                <span class="badge no"><span class="dot"></span> Fail</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endwith %}{% endfor %}</tbody></table>
+    </div>
+</div>
+{% else %}
+<div class="card"><div class="card-bd"><div class="empty"><div class="empty-ico"><i data-lucide="bar-chart-3"></i></div><h3>No results published yet</h3><p>Your results will appear here once published</p></div></div></div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons();document.querySelectorAll('.pbar').forEach(function(el){el.style.width=el.getAttribute('data-pct')})</script>{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Student Feedback — EduLedger{% endblock %}
+{% block breadcrumb %}Student Feedback{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Student Feedback</h1><p class="pg-sub">{{ feedbacks|length }} message{{ feedbacks|length|pluralize }}</p></div>
+{% if feedbacks %}
+<div style="display:flex;flex-direction:column;gap:12px">{% for f in feedbacks %}
+<div class="card" style="animation-delay:{{ forloop.counter0|add:1 }}0ms"><div class="card-bd" style="display:flex;align-items:flex-start;gap:16px">
+    <div class="av-img" style="width:40px;height:40px;font-size:14px">{{ f.student_id.admin.first_name.0 }}{{ f.student_id.admin.last_name.0 }}</div>
+    <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:14px;font-weight:600;color:var(--n900)">{{ f.student_id.admin.first_name }} {{ f.student_id.admin.last_name }}</span><span style="font-size:12px;color:var(--n400)">{{ f.student_id.admin.email }}</span></div>
+        <p style="font-size:14px;color:var(--n700);line-height:1.6;margin:0">{{ f.feedback }}</p>
+        <p style="font-size:12px;color:var(--n400);margin-top:8px">{{ f.created_at|date:"M d, Y \a\t H:i" }}</p>
+    </div>
+</div></div>
+{% endfor %}</div>
+{% else %}
+<div class="card"><div class="card-bd"><div class="empty"><div class="empty-ico"><i data-lucide="message-square"></i></div><h3>No student feedback</h3><p>Feedback from students will appear here</p></div></div></div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

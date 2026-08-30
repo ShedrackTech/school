@@ -1,0 +1,19 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Edit Course — EduLedger{% endblock %}
+{% block breadcrumb %}Edit Course{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Edit Course</h1><p class="pg-sub">Update course details</p></div>
+<div class="card" style="max-width:540px">
+    <div class="card-hd"><h3 class="card-t">Course Details</h3></div>
+    <div class="card-bd">
+        <form method="post">{% csrf_token %}
+            <div class="fg"><label class="fl">Course Name</label><input type="text" name="course_name" class="fi" value="{{ course.course_name }}" required><p class="fh">Use the full formal name of the course</p></div>
+            <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
+                <button type="submit" class="btn btn-p"><i data-lucide="save"></i> Update Course</button>
+                <a href="{% url 'manage_course' %}" class="btn btn-s">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

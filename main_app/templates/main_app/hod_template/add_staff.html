@@ -1,0 +1,43 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Add Staff — EduLedger{% endblock %}
+{% block breadcrumb %}Add Staff{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Add New Staff</h1><p class="pg-sub">Create a new staff account with role-based access</p></div>
+<div class="card" style="max-width:720px">
+    <div class="card-hd"><h3 class="card-t">Staff Information</h3></div>
+    <div class="card-bd">
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div class="notice info" style="margin-bottom:24px"><i data-lucide="shield-check"></i><p>A login email and temporary password will be created. The staff member can change their password after first login.</p></div>
+            <div class="section-hd">Account Details</div>
+            <div class="fr">
+                <div class="fg"><label class="fl">First Name</label><input type="text" name="first_name" class="fi" placeholder="John" required></div>
+                <div class="fg"><label class="fl">Last Name</label><input type="text" name="last_name" class="fi" placeholder="Doe" required></div>
+            </div>
+            <div class="fr">
+                <div class="fg"><label class="fl">Email Address</label><input type="email" name="email" class="fi" id="emailInput" placeholder="john.doe@school.edu" required oninput="checkEmail()"><div id="emailStatus" class="fh"></div></div>
+                <div class="fg"><label class="fl">Profile Photo</label><input type="file" name="profile_pic" class="fi" accept="image/*" required></div>
+            </div>
+            <div class="fr">
+                <div class="fg"><label class="fl">Password</label><input type="password" name="password" class="fi" placeholder="Minimum 8 characters" required></div>
+                <div class="fg"><label class="fl">Confirm Password</label><input type="password" name="password2" class="fi" placeholder="Re-enter password" required><p class="fh">Checked in your browser only — not enforced server-side yet</p></div>
+            </div>
+            <div class="section-hd">Assignment</div>
+            <div class="fr">
+                <div class="fg"><label class="fl">Course</label><select name="course" class="fs" required><option value="">Select course</option>{% for c in courses %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+                <div class="fg"><label class="fl">Gender</label><select name="gender" class="fs"><option value="">Select gender</option><option value="M">Male</option><option value="F">Female</option></select></div>
+            </div>
+            <div class="fg"><label class="fl">Address</label><textarea name="address" class="fta" rows="3" placeholder="Full address"></textarea></div>
+            <div style="display:flex;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--n100)">
+                <button type="submit" class="btn btn-p"><i data-lucide="user-plus"></i> Create Staff Account</button>
+                <a href="{% url 'manage_staff' %}" class="btn btn-s">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+function checkEmail(){var e=document.getElementById('emailInput').value,s=document.getElementById('emailStatus');if(!e){s.textContent='';return}fetch('/check_email_availability?email='+encodeURIComponent(e)).then(function(r){return r.json()}).then(function(d){s.innerHTML=d.exists?'<span style="color:var(--danger)">Already registered</span>':'<span style="color:var(--success)">Available</span>'}).catch(function(){s.textContent=''})}
+</script>
+{% endblock %}

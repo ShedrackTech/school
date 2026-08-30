@@ -1,0 +1,24 @@
+/* ============================================================
+   HEADER.CSS
+   Sticky top header: breadcrumb, mobile menu button, header icons.
+   ============================================================ */
+.top-hdr{height:var(--hh);background:rgba(255,255,255,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--n200);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:500}
+.hdr-left{display:flex;align-items:center;gap:16px}
+.mob-btn{display:none;background:none;border:none;color:var(--n600);cursor:pointer;padding:8px;border-radius:var(--rs)}
+.mob-btn:hover{background:var(--n100)}
+.mob-btn i{width:22px;height:22px}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--n500)}
+.crumb a{color:var(--n500);text-decoration:none;transition:color var(--tf)}
+.crumb a:hover{color:var(--p600)}
+.crumb .sep{color:var(--n300)}
+.crumb .cur{color:var(--n800);font-weight:500}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.hdr-btn{width:40px;height:40px;border-radius:var(--rs);border:1px solid var(--n200);background:var(--n0);color:var(--n600);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tf);position:relative}
+.hdr-btn:hover{background:linear-gradient(135deg,var(--p50),var(--p100));border-color:var(--p300);color:var(--p700);transform:translateY(-2px)}
+.hdr-btn i{width:18px;height:18px}
+.hdr-btn .dot{position:absolute;top:8px;right:8px;width:7px;height:7px;background:var(--danger);border-radius:50%;border:2px solid #fff}
+
+@media(max-width:768px){
+    .mob-btn{display:flex}
+    .top-hdr{padding:0 20px}
+}

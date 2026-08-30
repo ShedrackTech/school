@@ -1,0 +1,45 @@
+{% extends 'main_app/staff_template/staff_base.html' %}
+{% block title %}Add Result — EduLedger{% endblock %}
+{% block breadcrumb %}Add Result{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Add Student Result</h1><p class="pg-sub">Enter test and exam scores for a student</p></div>
+<div class="g2">
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Result Entry</h3></div>
+        <div class="card-bd">
+            <form method="post">{% csrf_token %}
+                <div class="fg"><label class="fl">Student</label><select name="student" class="fs" required><option value="">Select student</option>{% for s in students %}<option value="{{ s.id }}">{{ s.admin.first_name }} {{ s.admin.last_name }} ({{ s.admin.email }})</option>{% endfor %}</select></div>
+                <div class="fg"><label class="fl">Subject</label><select name="subject" class="fs" required><option value="">Select subject</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.subject_name }}</option>{% endfor %}</select></div>
+                <div class="fg"><label class="fl">Session</label><select name="session" class="fs" required><option value="">Select session</option>{% for s in sessions %}<option value="{{ s.id }}">{{ s.session_start }} - {{ s.session_end }}</option>{% endfor %}</select></div>
+                <div class="fr">
+                    <div class="fg"><label class="fl">Test Score (out of 30)</label><input type="number" name="test" class="fi" min="0" max="30" placeholder="0" required id="testInput"></div>
+                    <div class="fg"><label class="fl">Exam Score (out of 70)</label><input type="number" name="exam" class="fi" min="0" max="70" placeholder="0" required id="examInput"></div>
+                </div>
+                <div id="totalPreview" style="display:none;padding:16px 20px;background:var(--p50);border:1px solid var(--p100);border-radius:var(--rm);margin-bottom:20px">
+                    <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:13px;font-weight:600;color:var(--p800)">Total Score</span><span id="totalValue" style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:var(--p700)">0 / 100</span></div>
+                </div>
+                <div style="display:flex;gap:12px"><button type="submit" class="btn btn-p"><i data-lucide="save"></i> Save Result</button><a href="{% url 'staff_home' %}" class="btn btn-s">Cancel</a></div>
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Grading Guide</h3></div>
+        <div class="card-bd">
+            <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#ecfdf5;border-radius:var(--rs)"><span style="font-size:13px;font-weight:600;color:#059669">A+ / A</span><span style="font-size:12px;color:#047857">80 – 100</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f0fdf4;border-radius:var(--rs)"><span style="font-size:13px;font-weight:600;color:#16a34a">B+ / B</span><span style="font-size:12px;color:#15803d">60 – 79</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fffbeb;border-radius:var(--rs)"><span style="font-size:13px;font-weight:600;color:#d97706">C+ / C</span><span style="font-size:12px;color:#b45309">40 – 59</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fef2f2;border-radius:var(--rs)"><span style="font-size:13px;font-weight:600;color:#dc2626">F</span><span style="font-size:12px;color:#b91c1c">Below 40</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+var t=document.getElementById('testInput'),e=document.getElementById('examInput'),p=document.getElementById('totalPreview'),v=document.getElementById('totalValue');
+function updateTotal(){var a=parseInt(t.value)||0,b=parseInt(e.value)||0;v.textContent=(a+b)+' / 100';p.style.display=(a>0||b>0)?'block':'none'}
+t.addEventListener('input',updateTotal);e.addEventListener('input',updateTotal);
+</script>
+{% endblock %}

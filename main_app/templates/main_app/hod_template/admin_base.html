@@ -1,0 +1,25 @@
+{% extends 'main_app/base.html' %}
+
+{% block sidebar_nav %}
+<div class="nav-label">Overview</div>
+<a href="{% url 'admin_home' %}" class="nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+<div class="nav-label">People</div>
+<a href="{% url 'manage_staff' %}" class="nav-item"><i data-lucide="user-cog"></i> Manage Staff</a>
+<a href="{% url 'manage_student' %}" class="nav-item"><i data-lucide="graduation-cap"></i> Manage Students</a>
+<div class="nav-label">Academic</div>
+<a href="{% url 'manage_course' %}" class="nav-item"><i data-lucide="book-open"></i> Courses</a>
+<a href="{% url 'manage_subject' %}" class="nav-item"><i data-lucide="file-text"></i> Subjects</a>
+<a href="{% url 'manage_session' %}" class="nav-item"><i data-lucide="calendar"></i> Sessions</a>
+<div class="nav-label">Records</div>
+<a href="{% url 'admin_view_attendance' %}" class="nav-item"><i data-lucide="clipboard-check"></i> Attendance</a>
+<a href="{% url 'view_student_leave' %}" class="nav-item"><i data-lucide="calendar-off"></i> Student Leaves</a>
+<a href="{% url 'view_staff_leave' %}" class="nav-item"><i data-lucide="calendar-off"></i> Staff Leaves</a>
+<div class="nav-label">Communication</div>
+<a href="{% url 'admin_notify_student' %}" class="nav-item"><i data-lucide="send"></i> Notify Students</a>
+<a href="{% url 'admin_notify_staff' %}" class="nav-item"><i data-lucide="send"></i> Notify Staff</a>
+<a href="{% url 'student_feedback_message' %}" class="nav-item"><i data-lucide="message-square"></i> Student Feedback</a>
+<a href="{% url 'staff_feedback_message' %}" class="nav-item"><i data-lucide="message-square"></i> Staff Feedback</a>
+<div class="nav-label">Account</div>
+<a href="{% url 'profile_change_requests' %}" class="nav-item"><i data-lucide="user-check"></i> Profile Requests</a>
+<a href="{% url 'admin_view_profile' %}" class="nav-item"><i data-lucide="user"></i> My Profile</a>
+{% endblock %}

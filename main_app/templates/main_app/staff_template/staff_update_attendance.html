@@ -1,0 +1,45 @@
+{% extends 'main_app/staff_template/staff_base.html' %}
+{% block title %}Update Attendance — EduLedger{% endblock %}
+{% block breadcrumb %}Update Attendance{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Update Attendance</h1><p class="pg-sub">Modify a previously saved attendance record</p></div>
+<div class="card" style="max-width:720px;margin-bottom:24px" data-fetch-url="{% url 'get_student_attendance' %}" data-update-url="{% url 'update_attendance' %}">
+    <div class="card-bd">
+        <div class="fr">
+            <div class="fg"><label class="fl">Subject</label><select name="subject" id="subjectSelect" class="fs"><option value="">Select subject</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.subject_name }}</option>{% endfor %}</select></div>
+            <div class="fg"><label class="fl">Session</label><select name="session" id="sessionSelect" class="fs"><option value="">Select session</option>{% for s in sessions %}<option value="{{ s.id }}">{{ s.session_start }} - {{ s.session_end }}</option>{% endfor %}</select></div>
+        </div>
+        <div class="fg" style="max-width:240px"><label class="fl">Attendance Date</label><input type="date" name="date" id="dateInput" class="fi"></div>
+    </div>
+</div>
+<div id="attendanceCard" style="display:none">
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Update Students</h3><div style="display:flex;gap:8px"><button type="button" onclick="markAll(true)" class="btn btn-sm btn-s"><i data-lucide="check-check"></i> Present All</button><button type="button" onclick="markAll(false)" class="btn btn-sm btn-s"><i data-lucide="x"></i> Absent All</button></div></div>
+        <div class="card-bd" style="padding:0">
+            <table class="lt"><thead><tr><th style="width:50%;padding-left:24px">Student</th><th>Status</th></tr></thead><tbody id="studentList"></tbody></table>
+        </div>
+        <div style="padding:20px 24px;border-top:1px solid var(--n100);display:flex;gap:12px;justify-content:flex-end">
+            <button onclick="saveAttendance()" class="btn btn-p"><i data-lucide="save"></i> Update Attendance</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+document.getElementById('dateInput').valueAsDate=new Date();
+var studentsData=[];
+var wrapper=document.querySelector('[data-fetch-url]');
+var fetchUrl=wrapper.getAttribute('data-fetch-url');
+var updateUrl=wrapper.getAttribute('data-update-url');
+var csrfToken=document.body.getAttribute('data-csrf');
+
+function loadStudents(){var subject=document.getElementById('subjectSelect').value,session=document.getElementById('sessionSelect').value,date=document.getElementById('dateInput').value,card=document.getElementById('attendanceCard');if(!subject||!session||!date){card.style.display='none';return}fetch(fetchUrl+'?subject_id='+subject+'&session_id='+session+'&date='+date).then(function(r){return r.json()}).then(function(data){studentsData=data.students||[];var tbody=document.getElementById('studentList');tbody.innerHTML='';if(studentsData.length===0){tbody.innerHTML='<tr><td colspan="2" style="text-align:center;padding:40px;color:var(--n400)">No record found for this date</td></tr>';card.style.display='block';lucide.createIcons();return}studentsData.forEach(function(s,i){var initials=(s.name||'??').split(' ').map(function(w){return w[0]}).join('').substring(0,2).toUpperCase();tbody.innerHTML+='<tr><td style="padding-left:24px"><div class="av"><div class="av-img">'+initials+'</div><div><div class="av-name">'+s.name+'</div><div class="av-sub">'+(s.email||'')+'</div></div></div></td><td><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="radio" name="status_'+i+'" value="true"'+(s.status?' checked':'')+' style="accent-color:var(--p600);width:16px;height:16px"><span style="font-size:13px;color:var(--success);font-weight:500">Present</span></label><label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-left:16px"><input type="radio" name="status_'+i+'" value="false"'+(!s.status?' checked':'')+' style="accent-color:var(--danger);width:16px;height:16px"><span style="font-size:13px;color:var(--danger);font-weight:500">Absent</span></label></td></tr>'});card.style.display='block';lucide.createIcons()}).catch(function(){})}
+
+function markAll(present){studentsData.forEach(function(_,i){document.querySelectorAll('input[name="status_'+i+'"]').forEach(function(r){r.checked=(r.value===String(present))})})}
+
+function saveAttendance(){var subject=document.getElementById('subjectSelect').value,session=document.getElementById('sessionSelect').value,date=document.getElementById('dateInput').value;var attendance=studentsData.map(function(s,i){return{student_id:s.id,status:document.querySelector('input[name="status_'+i+'"]:checked').value==='true'}});fetch(updateUrl,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':csrfToken},body:JSON.stringify({subject_id:subject,session_id:session,date:date,attendance:attendance})}).then(function(r){return r.json()}).then(function(d){showToast(d.status==='success'?'success':'error',d.message||(d.status==='success'?'Updated':'Failed'))}).catch(function(){showToast('error','Error')})}
+
+['subjectSelect','sessionSelect','dateInput'].forEach(function(id){document.getElementById(id).addEventListener('change',loadStudents)});
+</script>
+{% endblock %}

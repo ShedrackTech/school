@@ -1,0 +1,30 @@
+/* ============================================================
+   BASE.CSS
+   Global reset, body background/animation, typography.
+   ============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    font-family:'DM Sans',sans-serif;
+    color:var(--n800);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    background-color:var(--n50);
+    background-image:
+        radial-gradient(circle at 15% 20%, rgba(var(--bg1-rgb),0.12) 0%, transparent 45%), /* themed */
+        radial-gradient(circle at 85% 75%, rgba(var(--bg2-rgb),0.1) 0%, transparent 45%);  /* themed */
+    background-size:200% 200%;
+    background-repeat:no-repeat;
+    animation:bgshift 18s ease-in-out infinite alternate;
+}
+@keyframes bgshift{
+    from{background-position:0% 0%, 100% 100%}
+    to{background-position:30% 15%, 65% 85%}
+}
+h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:600;line-height:1.2;color:var(--n900)}
+
+@media (prefers-reduced-motion: reduce){
+    body{animation:none}
+    .btn,.ibtn,.hdr-btn,.fi,.fs,.fta,.sb-brand h2,.sb-brand p{animation:none!important;transition:none!important}
+    .btn::after{display:none}
+}

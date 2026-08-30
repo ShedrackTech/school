@@ -1,0 +1,18 @@
+{% extends 'main_app/student_template/student_base.html' %}
+{% block title %}Notifications — EduLedger{% endblock %}
+{% block breadcrumb %}Notifications{% endblock %}
+{% block extra_css %}{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">My Notifications</h1><p class="pg-sub">{{ notifications|length }} notification{{ notifications|length|pluralize }}</p></div>
+{% if notifications %}
+<div class="card-list" style="display:flex;flex-direction:column;gap:12px">{% for n in notifications %}
+<div class="card"><div class="card-bd" style="display:flex;align-items:flex-start;gap:16px">
+    <div style="width:40px;height:40px;border-radius:50%;background:var(--p50);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i data-lucide="bell" style="width:18px;height:18px;color:var(--p600)"></i></div>
+    <div style="flex:1;min-width:0"><p style="font-size:14px;color:var(--n800);line-height:1.6;margin:0">{{ n.message }}</p><p style="font-size:12px;color:var(--n400);margin-top:8px">{{ n.created_at|date:"M d, Y \a\t H:i" }}</p></div>
+</div></div>
+{% endfor %}</div>
+{% else %}
+<div class="card"><div class="card-bd"><div class="empty"><div class="empty-ico"><i data-lucide="bell-off"></i></div><h3>No notifications</h3><p>You're all caught up</p></div></div></div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

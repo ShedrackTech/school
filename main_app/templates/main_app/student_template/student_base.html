@@ -1,0 +1,14 @@
+{% extends 'main_app/base.html' %}
+{% block sidebar_nav %}
+<div class="nav-label">Overview</div>
+<a href="{% url 'student_home' %}" class="nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+<div class="nav-label">Academic</div>
+<a href="{% url 'student_view_result' %}" class="nav-item"><i data-lucide="bar-chart-3"></i> My Results</a>
+<a href="{% url 'student_view_attendance' %}" class="nav-item"><i data-lucide="clipboard-check"></i> My Attendance</a>
+<div class="nav-label">Requests</div>
+<a href="{% url 'student_apply_leave' %}" class="nav-item"><i data-lucide="calendar-off"></i> Apply Leave</a>
+<a href="{% url 'student_feedback' %}" class="nav-item"><i data-lucide="message-square"></i> Feedback</a>
+<div class="nav-label">Account</div>
+<a href="{% url 'student_view_profile' %}" class="nav-item"><i data-lucide="user"></i> My Profile</a>
+<a href="{% url 'student_view_notification' %}" class="nav-item"><i data-lucide="bell"></i> Notifications</a>
+{% endblock %}

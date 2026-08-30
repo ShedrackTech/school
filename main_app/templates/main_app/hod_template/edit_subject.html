@@ -1,0 +1,21 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Edit Subject — EduLedger{% endblock %}
+{% block breadcrumb %}Edit Subject{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Edit Subject</h1><p class="pg-sub">Update subject details</p></div>
+<div class="card" style="max-width:540px">
+    <div class="card-hd"><h3 class="card-t">Subject Details</h3></div>
+    <div class="card-bd">
+        <form method="post">{% csrf_token %}
+            <div class="fg"><label class="fl">Subject Name</label><input type="text" name="subject_name" class="fi" value="{{ subject.subject_name }}" required></div>
+            <div class="fg"><label class="fl">Course</label><select name="course" class="fs" required><option value="">Select course</option>{% for c in courses %}<option value="{{ c.id }}" {% if subject.course_id.id == c.id %}selected{% endif %}>{{ c.course_name }}</option>{% endfor %}</select></div>
+            <div class="fg"><label class="fl">Assigned Staff</label><select name="staff" class="fs" required><option value="">Select staff</option>{% for s in staffs %}<option value="{{ s.id }}" {% if subject.staff_id.id == s.id %}selected{% endif %}>{{ s.admin.first_name }} {{ s.admin.last_name }}</option>{% endfor %}</select></div>
+            <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
+                <button type="submit" class="btn btn-p"><i data-lucide="save"></i> Update Subject</button>
+                <a href="{% url 'manage_subject' %}" class="btn btn-s">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}
