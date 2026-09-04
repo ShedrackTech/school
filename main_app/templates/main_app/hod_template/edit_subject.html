@@ -7,9 +7,23 @@
     <div class="card-hd"><h3 class="card-t">Subject Details</h3></div>
     <div class="card-bd">
         <form method="post">{% csrf_token %}
-            <div class="fg"><label class="fl">Subject Name</label><input type="text" name="subject_name" class="fi" value="{{ subject.subject_name }}" required></div>
-            <div class="fg"><label class="fl">Course</label><select name="course" class="fs" required><option value="">Select course</option>{% for c in courses %}<option value="{{ c.id }}" {% if subject.course_id.id == c.id %}selected{% endif %}>{{ c.course_name }}</option>{% endfor %}</select></div>
-            <div class="fg"><label class="fl">Assigned Staff</label><select name="staff" class="fs" required><option value="">Select staff</option>{% for s in staffs %}<option value="{{ s.id }}" {% if subject.staff_id.id == s.id %}selected{% endif %}>{{ s.admin.first_name }} {{ s.admin.last_name }}</option>{% endfor %}</select></div>
+            <div class="fg"><label class="fl">Subject Name</label><input type="text" name="name" class="fi" value="{{ subject.name }}" required></div>
+            <div class="fg">
+                <label class="fl">Course</label>
+                <select name="course" class="fs" id="courseSelect" required onchange="toggleDepartment()">
+                    <option value="">Select course</option>
+                    {% for c in courses %}<option value="{{ c.id }}" data-hd="{{ c.has_departments|yesno:'1,0' }}" {% if subject.course_id == c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="fg" id="departmentGroup">
+                <label class="fl">Department</label>
+                <select name="department" class="fs" id="departmentSelect">
+                    <option value="">Core subject (all departments)</option>
+                    {% for d in departments %}<option value="{{ d.id }}" {% if subject.department_id == d.id %}selected{% endif %}>{{ d.name }}</option>{% endfor %}
+                </select>
+                <p class="fh">Leave as "Core subject" if every student in this class takes it.</p>
+            </div>
+            <div class="fg"><label class="fl">Assigned Staff</label><select name="staff" class="fs" required><option value="">Select staff</option>{% for s in staffs %}<option value="{{ s.id }}" {% if subject.staff_id == s.id %}selected{% endif %}>{{ s.admin.first_name }} {{ s.admin.last_name }}</option>{% endfor %}</select></div>
             <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
                 <button type="submit" class="btn btn-p"><i data-lucide="save"></i> Update Subject</button>
                 <a href="{% url 'manage_subject' %}" class="btn btn-s">Cancel</a>
@@ -18,4 +32,14 @@
     </div>
 </div>
 {% endblock %}
-{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+function toggleDepartment(){
+    var sel=document.getElementById('courseSelect');
+    var opt=sel.options[sel.selectedIndex];
+    document.getElementById('departmentGroup').style.display=(opt && opt.getAttribute('data-hd')==='1')?'block':'none';
+}
+toggleDepartment();
+</script>
+{% endblock %}

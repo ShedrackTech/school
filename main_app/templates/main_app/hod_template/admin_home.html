@@ -7,10 +7,48 @@
     <p class="pg-sub">Overview of your institution's key metrics</p>
 </div>
 <div class="stats">
-    <div class="st tl"><div class="st-top"><div class="st-ico"><i data-lucide="users"></i></div><div class="st-trend up"><i data-lucide="trending-up"></i> 12%</div></div><div class="st-val">{{ total_staff|default:"--" }}</div><div class="st-lbl">Total Staff</div></div>
-    <div class="st am"><div class="st-top"><div class="st-ico"><i data-lucide="graduation-cap"></i></div><div class="st-trend up"><i data-lucide="trending-up"></i> 8%</div></div><div class="st-val">{{ total_students|default:"--" }}</div><div class="st-lbl">Total Students</div></div>
-    <div class="st sk"><div class="st-top"><div class="st-ico"><i data-lucide="book-open"></i></div></div><div class="st-val">{{ total_course|default:"--" }}</div><div class="st-lbl">Courses</div></div>
-    <div class="st rs"><div class="st-top"><div class="st-ico"><i data-lucide="file-text"></i></div></div><div class="st-val">{{ total_subject|default:"--" }}</div><div class="st-lbl">Subjects</div></div>
+    <div class="st tl">
+        <div class="st-top"><div class="st-ico"><i data-lucide="users"></i></div><div class="st-trend up"><i data-lucide="trending-up"></i> 12%</div></div>
+        <div class="st-val">{{ total_staff|default:"--" }}</div>
+        <div class="st-lbl">Total Staff</div>
+    </div>
+    <div class="st am">
+        <div class="st-top"><div class="st-ico"><i data-lucide="graduation-cap"></i></div><div class="st-trend up"><i data-lucide="trending-up"></i> 8%</div></div>
+        <div class="st-val">{{ total_students|default:"--" }}</div>
+        <div class="st-lbl">Total Students</div>
+    </div>
+    <div class="st sk">
+        <div class="st-top"><div class="st-ico"><i data-lucide="book-open"></i></div></div>
+        <div class="st-val">{{ total_course|default:"--" }}</div>
+        <div class="st-lbl">Courses</div>
+    </div>
+    <div class="st rs">
+        <div class="st-top"><div class="st-ico"><i data-lucide="file-text"></i></div></div>
+        <div class="st-val">{{ total_subject|default:"--" }}</div>
+        <div class="st-lbl">Subjects</div>
+    </div>
+    <div class="st at">
+        <div class="st-top"><div class="st-ico"><i data-lucide="calendar-check"></i></div></div>
+        <div class="st-val">{{ attendance_present }}</div>
+        <div class="st-lbl">
+            {% if attendance_total %}
+                {% if attendance_is_today %}Students Present Today{% else %}Students Present ({{ attendance_date|date:"M j" }}){% endif %}
+            {% else %}
+                No Student Attendance Yet
+            {% endif %}
+        </div>
+    </div>
+    <div class="st tl">
+        <div class="st-top"><div class="st-ico"><i data-lucide="user-check"></i></div></div>
+        <div class="st-val">{{ staff_att_present }}</div>
+        <div class="st-lbl">
+            {% if staff_att_total %}
+                {% if staff_att_is_today %}Staff Present Today{% else %}Staff Present ({{ staff_att_date|date:"M j" }}){% endif %}
+            {% else %}
+                No Staff Attendance Yet
+            {% endif %}
+        </div>
+    </div>
 </div>
 <div class="g2">
     <div class="card">

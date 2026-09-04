@@ -10,8 +10,12 @@
 <a href="{% url 'manage_course' %}" class="nav-item"><i data-lucide="book-open"></i> Courses</a>
 <a href="{% url 'manage_subject' %}" class="nav-item"><i data-lucide="file-text"></i> Subjects</a>
 <a href="{% url 'manage_session' %}" class="nav-item"><i data-lucide="calendar"></i> Sessions</a>
+<a href="{% url 'manage_timetable' %}" class="nav-item"><i data-lucide="calendar-clock"></i> Timetable</a>
 <div class="nav-label">Records</div>
-<a href="{% url 'admin_view_attendance' %}" class="nav-item"><i data-lucide="clipboard-check"></i> Attendance</a>
+<a href="{% url 'admin_view_attendance' %}" class="nav-item"><i data-lucide="clipboard-check"></i> Class Attendance</a>
+<a href="{% url 'admin_student_attendance_list' %}" class="nav-item"><i data-lucide="user-check"></i> Student Attendance</a>
+<a href="{% url 'admin_take_staff_attendance' %}" class="nav-item"><i data-lucide="clipboard-list"></i> Take Staff Attendance</a>
+<a href="{% url 'admin_staff_attendance_list' %}" class="nav-item"><i data-lucide="user-check"></i> Staff Attendance</a>
 <a href="{% url 'view_student_leave' %}" class="nav-item"><i data-lucide="calendar-off"></i> Student Leaves</a>
 <a href="{% url 'view_staff_leave' %}" class="nav-item"><i data-lucide="calendar-off"></i> Staff Leaves</a>
 <div class="nav-label">Communication</div>

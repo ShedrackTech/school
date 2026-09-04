@@ -1,0 +1,41 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}{{ staff.admin.first_name }} {{ staff.admin.last_name }} — Attendance{% endblock %}
+{% block breadcrumb %}Attendance{% endblock %}
+{% block page_content %}
+<div class="pg-hdr">
+    <h1 class="pg-title">{{ staff.admin.first_name }} {{ staff.admin.last_name }}</h1>
+    <p class="pg-sub">{{ staff.course.name|default:"—" }}</p>
+</div>
+
+<div class="stats">
+    <div class="st tl"><div class="st-top"><div class="st-ico"><i data-lucide="clipboard-check"></i></div></div><div class="st-val">{{ total }}</div><div class="st-lbl">Total Marked</div></div>
+    <div class="st am"><div class="st-top"><div class="st-ico"><i data-lucide="check-circle"></i></div></div><div class="st-val">{{ present }}</div><div class="st-lbl">Present</div></div>
+    <div class="st rs"><div class="st-top"><div class="st-ico"><i data-lucide="x-circle"></i></div></div><div class="st-val">{{ absent }}</div><div class="st-lbl">Absent</div></div>
+    <div class="st sk"><div class="st-top"><div class="st-ico"><i data-lucide="percent"></i></div></div><div class="st-val">{% if rate is not None %}{{ rate }}%{% else %}--{% endif %}</div><div class="st-lbl">Attendance Rate</div></div>
+</div>
+
+<div class="card">
+    <div class="card-hd"><h3 class="card-t">Attendance History</h3></div>
+    <div class="card-bd" style="padding:0">
+        {% if records %}
+        <table class="lt">
+            <thead><tr><th style="padding-left:24px">Date</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td style="padding-left:24px">{{ r.date }}</td>
+                    <td>
+                        {% if r.status %}<span style="color:var(--success);font-weight:600">Present</span>
+                        {% else %}<span style="color:var(--danger);font-weight:600">Absent</span>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty"><div class="empty-ico"><i data-lucide="calendar-x"></i></div><h3>No attendance records</h3><p>This staff member has no attendance history yet.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

@@ -7,8 +7,22 @@
     <div class="card-hd"><h3 class="card-t">Subject Details</h3></div>
     <div class="card-bd">
         <form method="post">{% csrf_token %}
-            <div class="fg"><label class="fl">Subject Name</label><input type="text" name="name" class="fi" placeholder="e.g. Data Structures" required></div>
-            <div class="fg"><label class="fl">Course</label><select name="course" class="fs" required><option value="">Select course</option>{% for c in courses %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+            <div class="fg"><label class="fl">Subject Name</label><input type="text" name="name" class="fi" placeholder="e.g. Physics" required></div>
+            <div class="fg">
+                <label class="fl">Course</label>
+                <select name="course" class="fs" id="courseSelect" required onchange="toggleDepartment()">
+                    <option value="">Select course</option>
+                    {% for c in courses %}<option value="{{ c.id }}" data-hd="{{ c.has_departments|yesno:'1,0' }}">{{ c.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="fg" id="departmentGroup" style="display:none">
+                <label class="fl">Department</label>
+                <select name="department" class="fs" id="departmentSelect">
+                    <option value="">Core subject (all departments)</option>
+                    {% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}
+                </select>
+                <p class="fh">Leave as "Core subject" if every student in this class takes it (e.g. English, Math). Set a department if only that stream takes it (e.g. Physics for Science).</p>
+            </div>
             <div class="fg"><label class="fl">Assigned Staff</label><select name="staff" class="fs" required><option value="">Select staff member</option>{% for s in staffs %}<option value="{{ s.id }}">{{ s.admin.first_name }} {{ s.admin.last_name }} — {{ s.admin.email }}</option>{% endfor %}</select><p class="fh">The staff member will be able to take attendance and manage results</p></div>
             <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
                 <button type="submit" class="btn btn-p"><i data-lucide="file-plus"></i> Create Subject</button>
@@ -18,4 +32,14 @@
     </div>
 </div>
 {% endblock %}
-{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+function toggleDepartment(){
+    var sel=document.getElementById('courseSelect');
+    var opt=sel.options[sel.selectedIndex];
+    var group=document.getElementById('departmentGroup');
+    group.style.display=(opt && opt.getAttribute('data-hd')==='1')?'block':'none';
+}
+</script>
+{% endblock %}

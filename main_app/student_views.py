@@ -7,6 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import (HttpResponseRedirect, get_object_or_404, redirect, render)
 from django.urls import reverse
+from django.db.models import Q
 
 from .forms import *
 from .models import *
@@ -14,7 +15,9 @@ from .models import *
 
 def student_home(request):
     student = get_object_or_404(Student, admin=request.user)
-    subjects = Subject.objects.filter(course=student.course)
+    subjects = Subject.objects.filter(course=student.course).filter(
+        Q(department__isnull=True) | Q(department=student.department)
+    )
     subject_count = subjects.count()
 
     # Attendance percentage
@@ -82,7 +85,7 @@ def student_view_attendance(request):
             json_data = [
                 {
                     "date": str(report.attendance.date),
-                    "subject": report.attendance.subject.subject_name,
+                    "subject": report.attendance.subject.name,
                     "status": report.status,
                 }
                 for report in reports.order_by('-attendance__date')
@@ -95,7 +98,9 @@ def student_view_attendance(request):
     if request.method != 'POST':
         course = get_object_or_404(Course, id=student.course.id)
         context = {
-            'subjects': Subject.objects.filter(course=course),
+            'subjects': Subject.objects.filter(course=course).filter(
+                Q(department__isnull=True) | Q(department=student.department)
+            ),
             'page_title': 'View Attendance'
         }
         return render(request, 'main_app/student_template/student_view_attendance.html', context)
@@ -144,7 +149,7 @@ def student_apply_leave(request):
             except Exception:
                 messages.error(request, "Could not submit")
         else:
-            messages.error(request, "Form has errors!")
+            messages.error(request, "Form has errors: " + str(form.errors))
     return render(request, "main_app/student_template/student_apply_leave.html", context)
 
 
@@ -235,3 +240,21 @@ def student_view_result(request):
         'page_title': "View Results"
     }
     return render(request, "main_app/student_template/student_view_result.html", context)
+
+def student_timetable(request):
+    student = get_object_or_404(Student, admin=request.user)
+    slots = TimetableSlot.objects.filter(course=student.course).filter(
+        Q(subject__department__isnull=True) | Q(subject__department=student.department)
+    ).select_related('subject', 'subject__staff', 'subject__staff__admin', 'session')
+
+    DAY_NAMES = dict(TimetableSlot.DAYS)
+    grouped = {}
+    for slot in slots:
+        grouped.setdefault(slot.day_of_week, []).append(slot)
+    days_grouped = [(DAY_NAMES[d], grouped[d]) for d in sorted(grouped)]
+
+    context = {
+        'days_grouped': days_grouped,
+        'page_title': 'My Timetable',
+    }
+    return render(request, 'main_app/student_template/student_timetable.html', context)

@@ -1,0 +1,56 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Edit Timetable Slot — EduLedger{% endblock %}
+{% block breadcrumb %}Edit Slot{% endblock %}
+{% block page_content %}
+<div class="pg-hdr">
+    <h1 class="pg-title">Edit Timetable Slot</h1>
+    <p class="pg-sub"><a href="{% url 'manage_timetable' %}" style="color:var(--p600)">&larr; Back to Timetable</a></p>
+</div>
+<div class="card" style="max-width:520px">
+    <div class="card-bd">
+        <form method="post">
+            {% csrf_token %}
+            <div class="fg">
+                <label class="fl">Course</label>
+                {{ form.course }}
+                {% if form.course.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.course.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="fg">
+                <label class="fl">Subject</label>
+                {{ form.subject }}
+                {% if form.subject.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.subject.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="fg">
+                <label class="fl">Session</label>
+                {{ form.session }}
+                {% if form.session.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.session.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="fg">
+                <label class="fl">Day</label>
+                {{ form.day_of_week }}
+                {% if form.day_of_week.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.day_of_week.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="fr">
+                <div class="fg">
+                    <label class="fl">Start Time</label>
+                    {{ form.start_time }}
+                </div>
+                <div class="fg">
+                    <label class="fl">End Time</label>
+                    {{ form.end_time }}
+                </div>
+            </div>
+            <div class="fg">
+                <label class="fl">Room</label>
+                {{ form.room }}
+                {% if form.room.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.room.errors.0 }}</div>{% endif %}
+            </div>
+            {% if form.non_field_errors %}
+            <div class="fe" style="margin-bottom:16px"><i data-lucide="alert-circle"></i> {{ form.non_field_errors.0 }}</div>
+            {% endif %}
+            <button type="submit" class="btn btn-p" style="width:100%"><i data-lucide="save"></i> Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

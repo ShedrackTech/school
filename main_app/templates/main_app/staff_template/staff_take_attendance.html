@@ -6,8 +6,8 @@
 <div class="card" style="max-width:720px;margin-bottom:24px" data-students-url="{% url 'get_students' %}" data-save-url="{% url 'save_attendance' %}">
     <div class="card-bd">
         <div class="fr">
-            <div class="fg"><label class="fl">Subject</label><select name="subject" id="subjectSelect" class="fs"><option value="">Select subject</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.subject_name }}</option>{% endfor %}</select></div>
-            <div class="fg"><label class="fl">Session</label><select name="session" id="sessionSelect" class="fs"><option value="">Select session</option>{% for s in sessions %}<option value="{{ s.id }}">{{ s.session_start }} - {{ s.session_end }}</option>{% endfor %}</select></div>
+            <div class="fg"><label class="fl">Subject</label><select name="subject" id="subjectSelect" class="fs"><option value="">Select subject</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select></div>
+            <div class="fg"><label class="fl">Session</label><select name="session" id="sessionSelect" class="fs"><option value="">Select session</option>{% for s in sessions %}<option value="{{ s.id }}">{{ s.start_year }} - {{ s.end_year }}</option>{% endfor %}</select></div>
         </div>
         <div class="fg" style="max-width:240px"><label class="fl">Attendance Date</label><input type="date" name="date" id="dateInput" class="fi"></div>
     </div>

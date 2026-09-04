@@ -1,0 +1,55 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Take Staff Attendance — EduLedger{% endblock %}
+{% block breadcrumb %}Attendance{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Take Staff Attendance</h1><p class="pg-sub">Mark today's register for all staff</p></div>
+
+<div class="card" style="margin-bottom:24px">
+    <div class="card-bd">
+        <form method="get" class="fr">
+            <div class="fg">
+                <label class="fl">Date</label>
+                <input type="date" name="date" class="fs" value="{{ selected_date|date:'Y-m-d' }}" onchange="this.form.submit()">
+            </div>
+        </form>
+    </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Staff Register — {{ selected_date }}</h3></div>
+        <div class="card-bd" style="padding:0">
+            <table class="lt">
+                <thead><tr><th style="padding-left:24px">Staff</th><th>Course</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for staff, is_present, has_record in staff_rows %}
+                    <tr>
+                        <td style="padding-left:24px">
+                            <div class="av">
+                                <div class="av-img">{{ staff.admin.first_name.0 }}{{ staff.admin.last_name.0 }}</div>
+                                <div><div class="av-name">{{ staff.admin.first_name }} {{ staff.admin.last_name }}</div><div class="av-sub">{{ staff.admin.email }}</div></div>
+                            </div>
+                        </td>
+                        <td>{{ staff.course.name|default:"—" }}</td>
+                        <td>
+                            <label style="margin-right:16px">
+                                <input type="radio" name="status_{{ staff.id }}" value="present" {% if is_present %}checked{% endif %}> Present
+                            </label>
+                            <label>
+                                <input type="radio" name="status_{{ staff.id }}" value="absent" {% if not is_present %}checked{% endif %}> Absent
+                            </label>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="margin-top:16px">
+        <button type="submit" class="btn btn-p">Save Attendance</button>
+    </div>
+</form>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

@@ -41,6 +41,10 @@ urlpatterns = [
          name="admin_view_attendance",),
     path("attendance/fetch/", hod_views.get_admin_attendance,
          name='get_admin_attendance'),
+    path("attendance/dates/fetch/", hod_views.get_attendance_dates,
+         name='get_attendance_dates'),
+    path("staff/subjects/fetch/", hod_views.get_staff_subjects,
+         name='get_staff_subjects'),
     path("student/add/", hod_views.add_student, name='add_student'),
     path("subject/add/", hod_views.add_subject, name='add_subject'),
     path("staff/manage/", hod_views.manage_staff, name='manage_staff'),
@@ -64,6 +68,23 @@ urlpatterns = [
          hod_views.edit_course, name='edit_course'),
     path("subject/edit/<int:subject_id>",
          hod_views.edit_subject, name='edit_subject'),
+    path("attendance/staff/take/", hod_views.admin_take_staff_attendance,
+     name='admin_take_staff_attendance'),
+    path("attendance/staff/", hod_views.admin_staff_attendance_list,
+     name='admin_staff_attendance_list'),
+    path("attendance/staff/<int:staff_id>/", hod_views.admin_staff_attendance_detail,
+     name='admin_staff_attendance_detail'),
+    path("attendance/students/", hod_views.admin_student_attendance_list,
+     name='admin_student_attendance_list'),
+    path("attendance/students/<int:student_id>/", hod_views.admin_student_attendance_detail,
+     name='admin_student_attendance_detail'),
+    path("timetable/manage/", hod_views.manage_timetable, name='manage_timetable'),
+    path("timetable/edit/<int:slot_id>", hod_views.edit_timetable_slot, name='edit_timetable_slot'),
+    path("timetable/delete/<int:slot_id>", hod_views.delete_timetable_slot, name='delete_timetable_slot'),
+    path("department/add/", hod_views.add_department, name='add_department'),
+    path("department/manage/", hod_views.manage_department, name='manage_department'),
+    path("department/edit/<int:department_id>", hod_views.edit_department, name='edit_department'),
+    path("department/delete/<int:department_id>", hod_views.delete_department, name='delete_department'),
 
     # Staff
     path("staff/home/", staff_views.staff_home, name='staff_home'),
@@ -91,6 +112,7 @@ urlpatterns = [
          name='edit_student_result'),
     path('staff/result/fetch/', staff_views.fetch_student_result,
          name='fetch_student_result'),
+    path("staff/timetable/", staff_views.staff_timetable, name='staff_timetable'),
 
     # Student
     path("student/home/", student_views.student_home, name='student_home'),
@@ -108,4 +130,5 @@ urlpatterns = [
          name="student_view_notification"),
     path('student/view/result/', student_views.student_view_result,
          name='student_view_result'),
+    path("student/timetable/", student_views.student_timetable, name='student_timetable'),
 ]

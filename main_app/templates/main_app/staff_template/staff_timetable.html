@@ -1,0 +1,34 @@
+{% extends 'main_app/staff_template/staff_base.html' %}
+{% block title %}My Timetable — EduLedger{% endblock %}
+{% block breadcrumb %}Timetable{% endblock %}
+{% block page_content %}
+<div class="pg-hdr">
+    <h1 class="pg-title">My Timetable</h1>
+    <p class="pg-sub">Your weekly teaching schedule</p>
+</div>
+<div class="card">
+    <div class="card-bd" style="padding:0">
+        {% if days_grouped %}
+            {% for day_name, slots in days_grouped %}
+            <table class="lt" style="margin-bottom:4px">
+                <thead><tr><th colspan="4" style="background:var(--p50);color:var(--p700)">{{ day_name }}</th></tr>
+                <tr><th>Time</th><th>Subject</th><th>Class</th><th>Room</th></tr></thead>
+                <tbody>
+                    {% for slot in slots %}
+                    <tr>
+                        <td>{{ slot.start_time|time:"H:i" }}–{{ slot.end_time|time:"H:i" }}</td>
+                        <td style="font-weight:500;color:var(--n800)">{{ slot.subject.name }}</td>
+                        <td>{{ slot.course.name }}</td>
+                        <td>{{ slot.room|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endfor %}
+        {% else %}
+            <div class="empty"><div class="empty-ico"><i data-lucide="calendar-clock"></i></div><h3>No timetable slots yet</h3><p>Your schedule will appear here once the admin sets it up</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

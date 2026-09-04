@@ -1,7 +1,6 @@
 import json
 
 from django.contrib import messages
-from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import HttpResponseRedirect, get_object_or_404, redirect, render
 from django.urls import reverse
@@ -18,7 +17,6 @@ def staff_home(request):
     results_count = StudentResult.objects.filter(subject__in=subjects).count()
     attendance_count = Attendance.objects.filter(subject__in=subjects).count()
 
-    # attach a per-subject student count so the dashboard table can show it
     subject_rows = []
     for s in subjects:
         s.student_count = Student.objects.filter(course=s.course).count()
@@ -35,7 +33,6 @@ def staff_home(request):
     }
     return render(request, 'main_app/staff_template/staff_home.html', context)
 
-
 def staff_take_attendance(request):
     staff = get_object_or_404(Staff, admin=request.user)
     subjects = Subject.objects.filter(staff_id=staff)
@@ -45,62 +42,58 @@ def staff_take_attendance(request):
         'sessions': sessions,
         'page_title': 'Take Attendance'
     }
-
     return render(request, 'main_app/staff_template/staff_take_attendance.html', context)
 
-
 def get_students(request):
-    subject_id = request.POST.get('subject')
-    session_id = request.POST.get('session')
+    subject_id = request.GET.get('subject_id')
+    session_id = request.GET.get('session_id')
     try:
         staff = get_object_or_404(Staff, admin=request.user)
         subject = get_object_or_404(Subject, id=subject_id)
-        if subject.staff != staff:  # ownership check
+        if subject.staff != staff:
             return JsonResponse({'error': 'Not permitted'}, status=403)
         session = get_object_or_404(Session, id=session_id)
-        students = Student.objects.filter(
-            course_id=subject.course.id, session=session)
+        students = Student.objects.filter(course_id=subject.course.id, session=session)
+        if subject.department_id:
+            students = students.filter(department_id=subject.department_id)
         student_data = []
         for student in students:
             data = {
                 "id": student.id,
-                "name": student.admin.last_name + " " + student.admin.first_name
+                "name": student.admin.last_name + " " + student.admin.first_name,
+                "email": student.admin.email,
             }
             student_data.append(data)
-        return JsonResponse(json.dumps(student_data), content_type='application/json', safe=False)
+        return JsonResponse(student_data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
 
 def save_attendance(request):
-    student_data = request.POST.get('student_ids')
-    date = request.POST.get('date')
-    subject_id = request.POST.get('subject')
-    session_id = request.POST.get('session')
-    students = json.loads(student_data)
     try:
         staff = get_object_or_404(Staff, admin=request.user)
-        session = get_object_or_404(Session, id=session_id)
-        subject = get_object_or_404(Subject, id=subject_id)
-        if subject.staff != staff:  # ownership check
-            return HttpResponse("False")
+        payload = json.loads(request.body)
+        subject = get_object_or_404(Subject, id=payload.get('subject_id'))
+        if subject.staff != staff:
+            return JsonResponse({'status': 'error', 'message': 'Not permitted'})
+        session = get_object_or_404(Session, id=payload.get('session_id'))
+        date = payload.get('date')
 
-        # Check if an attendance object already exists for the given date and session
         attendance, created = Attendance.objects.get_or_create(
             session=session, subject=subject, date=date)
 
-        for student_dict in students:
-            student = get_object_or_404(Student, id=student_dict.get('id'))
-            # update_or_create so re-submitting corrected statuses works
+        for item in payload.get('attendance', []):
+            student = get_object_or_404(Student, id=item.get('student_id'))
+            status = item.get('status') in (True, 'true', 1, '1')
             AttendanceReport.objects.update_or_create(
                 student=student,
                 attendance=attendance,
-                defaults={'status': student_dict.get('status')}
+                defaults={'status': status}
             )
-    except Exception:
-        return HttpResponse("False")
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
-    return HttpResponse("OK")
+    return JsonResponse({'status': 'success', 'message': 'Attendance saved'})
 
 
 def staff_update_attendance(request):
@@ -112,7 +105,6 @@ def staff_update_attendance(request):
         'sessions': sessions,
         'page_title': 'Update Attendance'
     }
-
     return render(request, 'main_app/staff_template/staff_update_attendance.html', context)
 
 
@@ -123,7 +115,7 @@ def get_student_attendance(request):
     try:
         staff = get_object_or_404(Staff, admin=request.user)
         subject = get_object_or_404(Subject, id=subject_id)
-        if subject.staff != staff:  # ownership check
+        if subject.staff != staff:
             return JsonResponse({'error': 'Not permitted'}, status=403)
         session = get_object_or_404(Session, id=session_id)
         attendance = Attendance.objects.filter(
@@ -151,7 +143,7 @@ def update_attendance(request):
         staff = get_object_or_404(Staff, admin=request.user)
         payload = json.loads(request.body)
         subject = get_object_or_404(Subject, id=payload.get('subject_id'))
-        if subject.staff != staff:  # ownership check
+        if subject.staff != staff:
             return JsonResponse({'status': 'error', 'message': 'Not permitted'})
         session = get_object_or_404(Session, id=payload.get('session_id'))
         date = payload.get('date')
@@ -188,7 +180,7 @@ def staff_apply_leave(request):
             except Exception:
                 messages.error(request, "Could not apply!")
         else:
-            messages.error(request, "Form has errors!")
+            messages.error(request, "Form has errors: " + str(form.errors))
     return render(request, "main_app/staff_template/staff_apply_leave.html", context)
 
 
@@ -286,7 +278,7 @@ def staff_add_result(request):
             exam = request.POST.get('exam')
             student = get_object_or_404(Student, id=student_id)
             subject = get_object_or_404(Subject, id=subject_id)
-            if subject.staff != staff:  # ownership check
+            if subject.staff != staff:
                 raise Exception("You are not assigned to this subject")
             try:
                 data = StudentResult.objects.get(
@@ -311,7 +303,7 @@ def fetch_student_result(request):
         student_id = request.POST.get('student')
         student = get_object_or_404(Student, id=student_id)
         subject = get_object_or_404(Subject, id=subject_id)
-        if subject.staff != staff:  # ownership check
+        if subject.staff != staff:
             return HttpResponse('False')
         result = StudentResult.objects.get(student=student, subject=subject)
         result_data = {
@@ -321,3 +313,21 @@ def fetch_student_result(request):
         return HttpResponse(json.dumps(result_data))
     except Exception:
         return HttpResponse('False')
+    
+def staff_timetable(request):
+    staff = get_object_or_404(Staff, admin=request.user)
+    slots = TimetableSlot.objects.filter(
+        subject__staff=staff
+    ).select_related('course', 'subject', 'session')
+
+    DAY_NAMES = dict(TimetableSlot.DAYS)
+    grouped = {}
+    for slot in slots:
+        grouped.setdefault(slot.day_of_week, []).append(slot)
+    days_grouped = [(DAY_NAMES[d], grouped[d]) for d in sorted(grouped)]
+
+    context = {
+        'days_grouped': days_grouped,
+        'page_title': 'My Timetable',
+    }
+    return render(request, 'main_app/staff_template/staff_timetable.html', context)

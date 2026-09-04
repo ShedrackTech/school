@@ -62,8 +62,8 @@
                 </div>
             </div>
             <div class="hdr-right">
-                <button class="hdr-btn" title="Notifications"><i data-lucide="bell"></i><span class="dot"></span></button>
-                <button class="hdr-btn" title="Settings"><i data-lucide="settings"></i></button>
+                <a href="{% if request.user.user_type == '2' %}{% url 'staff_view_notification' %}{% elif request.user.user_type == '3' %}{% url 'student_view_notification' %}{% endif %}" class="hdr-btn" title="Notifications"><i data-lucide="bell"></i>{% if request.user.user_type != '1' %}<span class="dot"></span>{% endif %}</a>
+                <a href="{% if request.user.user_type == '1' %}{% url 'admin_view_profile' %}{% elif request.user.user_type == '2' %}{% url 'staff_view_profile' %}{% else %}{% url 'student_view_profile' %}{% endif %}" class="hdr-btn" title="Settings"><i data-lucide="settings"></i></a>
             </div>
         </header>
         <main class="pg">{% block page_content %}{% endblock %}</main>

@@ -1,0 +1,64 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Staff Attendance — EduLedger{% endblock %}
+{% block breadcrumb %}Attendance{% endblock %}
+{% block page_content %}
+<div class="pg-hdr"><h1 class="pg-title">Staff Attendance</h1><p class="pg-sub">Attendance rate by staff member</p></div>
+
+<div class="card" style="margin-bottom:24px">
+    <div class="card-bd">
+        <form method="get" class="fr">
+            <div class="fg" style="flex:1">
+                <label class="fl">Search by name</label>
+                <input type="text" name="q" class="fs" value="{{ query }}" placeholder="e.g. Jane Doe">
+            </div>
+            <div class="fg" style="align-self:flex-end">
+                <button type="submit" class="btn btn-p">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-bd" style="padding:0">
+        {% if page_obj %}
+        <table class="lt">
+            <thead><tr><th style="padding-left:24px">Staff</th><th>Course</th><th>Marked</th><th>Present</th><th>Rate</th></tr></thead>
+            <tbody>
+                {% for s in page_obj %}
+                {% url 'admin_staff_attendance_detail' s.id as detail_url %}
+                <tr onclick="window.location='{{ detail_url }}'" style="cursor:pointer">
+                    <td style="padding-left:24px">
+                        <div class="av">
+                            <div class="av-img">{{ s.admin.first_name.0 }}{{ s.admin.last_name.0 }}</div>
+                            <div><div class="av-name">{{ s.admin.first_name }} {{ s.admin.last_name }}</div><div class="av-sub">{{ s.admin.email }}</div></div>
+                        </div>
+                    </td>
+                    <td>{{ s.course.name|default:"—" }}</td>
+                    <td>{{ s.total_marked }}</td>
+                    <td>{{ s.total_present }}</td>
+                    <td>
+                        {% if s.total_marked %}
+                            {% widthratio s.total_present s.total_marked 100 %}%
+                        {% else %}
+                            <span style="color:var(--n400)">No records</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty"><div class="empty-ico"><i data-lucide="user-cog"></i></div><h3>No staff found</h3></div>
+        {% endif %}
+    </div>
+</div>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div style="display:flex;justify-content:center;gap:8px;margin-top:16px">
+    {% if page_obj.has_previous %}<a class="btn btn-s" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Prev</a>{% endif %}
+    <span style="align-self:center;color:var(--n400)">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a class="btn btn-s" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

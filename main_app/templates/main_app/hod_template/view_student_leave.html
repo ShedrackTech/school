@@ -5,17 +5,59 @@
 <div class="pg-hdr"><h1 class="pg-title">Student Leave Requests</h1><p class="pg-sub">{{ leaves|length }} request{{ leaves|length|pluralize }}</p></div>
 {% if leaves %}
 <div class="card"><div class="card-bd" style="padding:0">
-<table class="lt"><thead><tr><th>Student</th><th>Leave Date</th><th>Reason</th><th>Status</th><th>Submitted</th></tr></thead>
+<table class="lt"><thead><tr><th>Student</th><th>Leave Date</th><th>Reason</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
 <tbody>{% for l in leaves %}<tr>
-    <td><div class="av"><div class="av-img">{{ l.student_id.admin.first_name.0 }}{{ l.student_id.admin.last_name.0 }}</div><div><div class="av-name">{{ l.student_id.admin.first_name }} {{ l.student_id.admin.last_name }}</div><div class="av-sub">{{ l.student_id.admin.email }}</div></div></div></td>
-    <td>{{ l.leave_date|date:"M d, Y" }}</td>
+    <td><div class="av"><div class="av-img">{{ l.student.admin.first_name.0 }}{{ l.student.admin.last_name.0 }}</div><div><div class="av-name">{{ l.student.admin.first_name }} {{ l.student.admin.last_name }}</div><div class="av-sub">{{ l.student.admin.email }}</div></div></div></td>
+    <td>{{ l.date }}</td>
     <td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.message }}</td>
     <td>{% if l.status == 1 %}<span class="badge ok"><span class="dot"></span> Approved</span>{% elif l.status == 0 %}<span class="badge wait"><span class="dot"></span> Pending</span>{% else %}<span class="badge no"><span class="dot"></span> Rejected</span>{% endif %}</td>
     <td>{{ l.created_at|date:"M d, Y" }}</td>
+    <td>
+        {% if l.status == 0 %}
+        <div class="act-btns">
+            <button type="button" class="ibtn leave-btn" data-id="{{ l.id }}" data-status="1" title="Approve"><i data-lucide="check"></i></button>
+            <button type="button" class="ibtn del leave-btn" data-id="{{ l.id }}" data-status="-1" title="Reject"><i data-lucide="x"></i></button>
+        </div>
+        {% else %}
+        <span style="font-size:12px;color:var(--n400)">—</span>
+        {% endif %}
+    </td>
 </tr>{% endfor %}</tbody></table>
 </div></div>
 {% else %}
 <div class="card"><div class="card-bd"><div class="empty"><div class="empty-ico"><i data-lucide="calendar-off"></i></div><h3>No leave requests</h3><p>Student leave requests will appear here</p></div></div></div>
 {% endif %}
 {% endblock %}
-{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+var csrfToken = document.querySelector('body').getAttribute('data-csrf');
+
+document.querySelectorAll('.leave-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var status = btn.getAttribute('data-status');
+
+        fetch('{% url "view_student_leave" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: 'id=' + encodeURIComponent(id) + '&status=' + encodeURIComponent(status)
+        })
+        .then(function (res) { return res.text(); })
+        .then(function (text) {
+            if (text.indexOf('True') !== -1) {
+                location.reload();
+            } else {
+                alert('Could not update leave request.');
+            }
+        })
+        .catch(function () {
+            alert('Something went wrong.');
+        });
+    });
+});
+</script>
+{% endblock %}

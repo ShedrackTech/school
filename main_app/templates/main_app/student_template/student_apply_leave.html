@@ -7,7 +7,7 @@
     <div class="card-hd"><h3 class="card-t">Leave Details</h3></div>
     <div class="card-bd">
         <form method="post">{% csrf_token %}
-            <div class="fg"><label class="fl">Leave Date</label><input type="date" name="leave_date" class="fi" required></div>
+            <div class="fg"><label class="fl">Leave Date</label><input type="date" name="date" class="fi" required></div>
             <div class="fg"><label class="fl">Reason</label><textarea name="message" class="fta" rows="4" placeholder="Explain why you need leave..." required></textarea></div>
             <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
                 <button type="submit" class="btn btn-p"><i data-lucide="send"></i> Submit Leave Request</button>

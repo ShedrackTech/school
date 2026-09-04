@@ -2,12 +2,41 @@
 {% block title %}View Attendance — EduLedger{% endblock %}
 {% block breadcrumb %}Attendance{% endblock %}
 {% block page_content %}
-<div class="pg-hdr"><h1 class="pg-title">View Attendance</h1><p class="pg-sub">Filter and view attendance records</p></div>
-<div class="card" style="max-width:720px;margin-bottom:24px" data-fetch-url="{% url 'get_admin_attendance' %}">
+<div class="pg-hdr"><h1 class="pg-title">Class Attendance</h1><p class="pg-sub">Filter by teacher, subject, and date to view a class's attendance</p></div>
+<div class="card" style="max-width:720px;margin-bottom:24px"
+     data-subjects-url="{% url 'get_staff_subjects' %}"
+     data-dates-url="{% url 'get_attendance_dates' %}"
+     data-fetch-url="{% url 'get_admin_attendance' %}">
     <div class="card-bd">
         <div class="fr">
-            <div class="fg"><label class="fl">Subject</label><select name="subject" id="subjectFilter" class="fs"><option value="">Select subject</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.subject_name }}</option>{% endfor %}</select></div>
-            <div class="fg"><label class="fl">Session</label><select name="session" id="sessionFilter" class="fs"><option value="">Select session</option>{% for s in sessions %}<option value="{{ s.id }}">{{ s.session_start }} - {{ s.session_end }}</option>{% endfor %}</select></div>
+            <div class="fg">
+                <label class="fl">Teacher</label>
+                <select name="staff" id="staffFilter" class="fs">
+                    <option value="">Select staff</option>
+                    {% for s in staffs %}<option value="{{ s.id }}">{{ s.admin.last_name }} {{ s.admin.first_name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="fg">
+                <label class="fl">Subject</label>
+                <select name="subject" id="subjectFilter" class="fs" disabled>
+                    <option value="">Select staff first</option>
+                </select>
+            </div>
+        </div>
+        <div class="fr">
+            <div class="fg">
+                <label class="fl">Session</label>
+                <select name="session" id="sessionFilter" class="fs">
+                    <option value="">Select session</option>
+                    {% for s in sessions %}<option value="{{ s.id }}">{{ s.start_year }} - {{ s.end_year }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="fg">
+                <label class="fl">Date</label>
+                <select name="date" id="dateFilter" class="fs" disabled>
+                    <option value="">Select subject &amp; session first</option>
+                </select>
+            </div>
         </div>
     </div>
 </div>
@@ -16,9 +45,136 @@
 {% block extra_js %}
 <script>
 lucide.createIcons();
-var fetchUrl=document.querySelector('[data-fetch-url]').getAttribute('data-fetch-url');
-function loadAttendance(){var s=document.getElementById('subjectFilter').value,se=document.getElementById('sessionFilter').value,c=document.getElementById('attendanceResults');if(!s||!se){c.innerHTML='<div class="card"><div class="card-bd"><div class="empty"><div class="empty-ico"><i data-lucide="clipboard-check"></i></div><h3>Select filters</h3><p>Choose a subject and session</p></div></div></div>';lucide.createIcons();return}c.innerHTML='<div class="card"><div class="card-bd" style="text-align:center;padding:40px"><p style="color:var(--n400)">Loading...</p></div></div>';fetch(fetchUrl+'?subject_id='+s+'&session_id='+se).then(function(r){return r.json()}).then(function(d){if(!d||d.length===0){c.innerHTML='<div class="card"><div class="card-bd"><div class="empty"><div class="empty-ico"><i data-lucide="clipboard-check"></i></div><h3>No records found</h3></div></div></div>';lucide.createIcons();return}var h='<div class="card"><div class="card-hd"><h3 class="card-t">'+d.length+' Records</h3></div><div class="card-bd" style="padding:0"><table class="lt"><thead><tr><th>Date</th><th>Session</th></tr></thead><tbody>';d.forEach(function(r){h+='<tr><td style="font-weight:600;color:var(--n900)">'+r.attendance_date+'</td><td>'+r.session+'</td></tr>'});h+='</tbody></table></div></div>';c.innerHTML=h}).catch(function(){c.innerHTML='<div class="card"><div class="card-bd"><div class="empty"><div class="empty-ico"><i data-lucide="alert-triangle"></i></div><h3>Error loading data</h3></div></div></div>';lucide.createIcons()})}
-document.getElementById('subjectFilter').addEventListener('change',loadAttendance);
-document.getElementById('sessionFilter').addEventListener('change',loadAttendance);
+
+var card = document.querySelector('[data-fetch-url]');
+var subjectsUrl = card.getAttribute('data-subjects-url');
+var datesUrl = card.getAttribute('data-dates-url');
+var fetchUrl = card.getAttribute('data-fetch-url');
+
+var staffFilter = document.getElementById('staffFilter');
+var subjectFilter = document.getElementById('subjectFilter');
+var sessionFilter = document.getElementById('sessionFilter');
+var dateFilter = document.getElementById('dateFilter');
+var results = document.getElementById('attendanceResults');
+
+function showEmpty(icon, title, subtitle) {
+    results.innerHTML =
+        '<div class="card"><div class="card-bd"><div class="empty">' +
+        '<div class="empty-ico"><i data-lucide="' + icon + '"></i></div>' +
+        '<h3>' + title + '</h3>' +
+        (subtitle ? '<p>' + subtitle + '</p>' : '') +
+        '</div></div></div>';
+    lucide.createIcons();
+}
+
+function resetSelect(select, placeholder) {
+    select.innerHTML = '<option value="">' + placeholder + '</option>';
+    select.disabled = true;
+}
+
+// Staff -> Subject
+staffFilter.addEventListener('change', function () {
+    resetSelect(subjectFilter, 'Loading subjects...');
+    resetSelect(dateFilter, 'Select subject & session first');
+    results.innerHTML = '';
+
+    var staffId = staffFilter.value;
+    if (!staffId) {
+        resetSelect(subjectFilter, 'Select staff first');
+        return;
+    }
+
+    fetch(subjectsUrl + '?staff_id=' + staffId)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (!data || data.length === 0) {
+                subjectFilter.innerHTML = '<option value="">No subjects assigned</option>';
+                subjectFilter.disabled = true;
+                return;
+            }
+            subjectFilter.innerHTML = '<option value="">Select subject</option>' +
+                data.map(function (s) { return '<option value="' + s.id + '">' + s.name + '</option>'; }).join('');
+            subjectFilter.disabled = false;
+        })
+        .catch(function () {
+            subjectFilter.innerHTML = '<option value="">Could not load subjects</option>';
+            subjectFilter.disabled = true;
+        });
+});
+
+// Subject or Session change -> Date
+function loadDates() {
+    resetSelect(dateFilter, 'Loading dates...');
+    results.innerHTML = '';
+
+    var subjectId = subjectFilter.value;
+    var sessionId = sessionFilter.value;
+    if (!subjectId || !sessionId) {
+        resetSelect(dateFilter, 'Select subject & session first');
+        return;
+    }
+
+    fetch(datesUrl + '?subject_id=' + subjectId + '&session_id=' + sessionId)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (!data || data.length === 0) {
+                dateFilter.innerHTML = '<option value="">No attendance taken yet</option>';
+                dateFilter.disabled = true;
+                showEmpty('calendar-x', 'No attendance records', 'No attendance has been taken for this subject and session yet.');
+                return;
+            }
+            dateFilter.innerHTML = '<option value="">Select date</option>' +
+                data.map(function (a) { return '<option value="' + a.id + '">' + a.date + '</option>'; }).join('');
+            dateFilter.disabled = false;
+            results.innerHTML = '';
+        })
+        .catch(function () {
+            dateFilter.innerHTML = '<option value="">Could not load dates</option>';
+            dateFilter.disabled = true;
+        });
+}
+
+subjectFilter.addEventListener('change', loadDates);
+sessionFilter.addEventListener('change', loadDates);
+
+// Date -> results table
+dateFilter.addEventListener('change', function () {
+    var attendanceId = dateFilter.value;
+    if (!attendanceId) {
+        results.innerHTML = '';
+        return;
+    }
+
+    results.innerHTML = '<div class="card"><div class="card-bd" style="text-align:center;padding:40px"><p style="color:var(--n400)">Loading...</p></div></div>';
+
+    fetch(fetchUrl + '?attendance_id=' + attendanceId)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (!data || data.error) {
+                showEmpty('alert-triangle', 'Error loading data', data && data.error ? data.error : '');
+                return;
+            }
+            if (data.length === 0) {
+                showEmpty('clipboard-check', 'No students found', 'No attendance reports exist for this date.');
+                return;
+            }
+            var presentCount = data.filter(function (d) { return d.status; }).length;
+            var h = '<div class="card"><div class="card-hd"><h3 class="card-t">' + data.length + ' Students &middot; ' + presentCount + ' Present</h3></div>' +
+                '<div class="card-bd" style="padding:0"><table class="lt"><thead><tr><th style="padding-left:24px">Student</th><th>Status</th></tr></thead><tbody>';
+            data.forEach(function (r) {
+                var badge = r.status
+                    ? '<span style="color:var(--success);font-weight:600">Present</span>'
+                    : '<span style="color:var(--danger);font-weight:600">Absent</span>';
+                h += '<tr><td style="padding-left:24px;font-weight:600;color:var(--n900)">' + r.name + '</td><td>' + badge + '</td></tr>';
+            });
+            h += '</tbody></table></div></div>';
+            results.innerHTML = h;
+        })
+        .catch(function () {
+            showEmpty('alert-triangle', 'Error loading data', '');
+        });
+});
+
+showEmpty('clipboard-check', 'Select filters', 'Choose a staff member, subject, session, and date to view attendance.');
 </script>
 {% endblock %}

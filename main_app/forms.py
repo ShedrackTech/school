@@ -1,5 +1,7 @@
 from django import forms
 from django.forms.widgets import DateInput, TextInput
+from .models import TimetableSlot
+
 
 from .models import *
 
@@ -202,3 +204,72 @@ class ProfileChangeRequestForm(FormSettings):
     class Meta:
         model = ProfileChangeRequest
         fields = ['first_name', 'last_name', 'email', 'gender', 'address', 'profile_pic']
+        
+class TimetableSlotForm(FormSettings):
+    class Meta:
+        model = TimetableSlot
+        fields = ['course', 'subject', 'session', 'day_of_week', 'start_time', 'end_time', 'room']
+        widgets = {
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        instance = TimetableSlot(**{k: v for k, v in cleaned_data.items() if k in
+                                     [f.name for f in TimetableSlot._meta.fields]})
+        instance.pk = self.instance.pk
+        instance.clean()
+        return cleaned_data
+    
+class DepartmentForm(FormSettings):
+    class Meta:
+        model = Department
+        fields = ['name']
+
+
+class CourseForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(CourseForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        fields = ['name', 'has_departments']
+        model = Course
+
+
+class StudentForm(CustomUserForm):
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+        self.fields['department'].required = False
+
+    class Meta(CustomUserForm.Meta):
+        model = Student
+        fields = CustomUserForm.Meta.fields + ['course', 'department', 'session']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        course = cleaned_data.get('course')
+        department = cleaned_data.get('department')
+        if course and course.has_departments and not department:
+            self.add_error('department', f"{course.name} students must be assigned a department.")
+        if course and not course.has_departments and department:
+            cleaned_data['department'] = None
+        return cleaned_data
+
+
+class SubjectForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(SubjectForm, self).__init__(*args, **kwargs)
+        self.fields['department'].required = False
+
+    class Meta:
+        model = Subject
+        fields = ['name', 'staff', 'course', 'department']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        course = cleaned_data.get('course')
+        department = cleaned_data.get('department')
+        if course and not course.has_departments and department:
+            self.add_error('department', f"{course.name} doesn't use departments.")
+        return cleaned_data

@@ -1,14 +1,14 @@
 {% extends 'main_app/hod_template/admin_base.html' %}
-{% block title %}Notify Students — EduLedger{% endblock %}
-{% block breadcrumb %}Notify Students{% endblock %}
+{% block title %}Notify Staff — EduLedger{% endblock %}
+{% block breadcrumb %}Notify Staff{% endblock %}
 {% block page_content %}
-<div class="pg-hdr"><h1 class="pg-title">Send Notification to Students</h1><p class="pg-sub">Broadcast a message to all or selected students</p></div>
+<div class="pg-hdr"><h1 class="pg-title">Send Notification to Staff</h1><p class="pg-sub">Broadcast a message to all or selected staff</p></div>
 <div class="card" style="max-width:720px">
     <div class="card-hd"><h3 class="card-t">Compose Notification</h3></div>
     <div class="card-bd">
-        <form method="post">{% csrf_token %}
-            <div class="fg"><label class="fl">Recipient</label><select name="recipient" class="fs" required><option value="">Select recipient</option><option value="all_students">All Students</option>{% for s in students %}<option value="{{ s.admin.id }}">{{ s.admin.first_name }} {{ s.admin.last_name }} ({{ s.admin.email }})</option>{% endfor %}</select><p class="fh">Select "All Students" to broadcast, or pick a specific student</p></div>
-            <div class="fg"><label class="fl">Message</label><textarea name="message" class="fta" rows="6" placeholder="Type your notification message here..." required></textarea></div>
+        <form id="notifyForm">{% csrf_token %}
+            <div class="fg"><label class="fl">Recipient</label><select name="recipient" id="recipientSelect" class="fs" required><option value="">Select recipient</option><option value="all_staff">All Staff</option>{% for s in allStaff %}<option value="{{ s.id }}">{{ s.first_name }} {{ s.last_name }} ({{ s.email }})</option>{% endfor %}</select><p class="fh">Select "All Staff" to broadcast, or pick a specific staff member</p></div>
+            <div class="fg"><label class="fl">Message</label><textarea name="message" id="messageInput" class="fta" rows="6" placeholder="Type your notification message here..." required></textarea></div>
             <div style="display:flex;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid var(--n100)">
                 <button type="submit" class="btn btn-p"><i data-lucide="send"></i> Send Notification</button>
                 <a href="{% url 'admin_home' %}" class="btn btn-s">Cancel</a>
@@ -17,4 +17,42 @@
     </div>
 </div>
 {% endblock %}
-{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}
+{% block extra_js %}
+<script>
+lucide.createIcons();
+
+document.getElementById('notifyForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const recipient = document.getElementById('recipientSelect').value;
+    const message = document.getElementById('messageInput').value.trim();
+    const csrfToken = this.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    if (!recipient || !message) return;
+
+    const recipientIds = recipient === 'all_staff'
+        ? [...document.getElementById('recipientSelect').options]
+              .filter(o => o.value && o.value !== 'all_staff')
+              .map(o => o.value)
+        : [recipient];
+
+    const sendOne = (id) => fetch("{% url 'send_staff_notification' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
+        },
+        body: `id=${encodeURIComponent(id)}&message=${encodeURIComponent(message)}`
+    }).then(r => r.text());
+
+    Promise.all(recipientIds.map(sendOne)).then(results => {
+        if (results.every(r => r.trim() === 'True')) {
+            alert('Notification sent successfully!');
+            this.reset();
+        } else {
+            alert('Some notifications may not have been delivered.');
+        }
+    });
+});
+</script>
+{% endblock %}

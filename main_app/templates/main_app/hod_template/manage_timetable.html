@@ -1,0 +1,121 @@
+{% extends 'main_app/hod_template/admin_base.html' %}
+{% block title %}Manage Timetable — EduLedger{% endblock %}
+{% block breadcrumb %}Timetable{% endblock %}
+{% block page_content %}
+<div class="pg-hdr">
+    <h1 class="pg-title">Manage Timetable</h1>
+    <p class="pg-sub">Build the weekly schedule for each class</p>
+</div>
+
+<div class="card" style="margin-bottom:24px">
+    <div class="card-hd"><h3 class="card-t">Filter</h3></div>
+    <div class="card-bd">
+        <form method="get" class="fr">
+            <div class="fg">
+                <label class="fl">Course</label>
+                <select name="course" class="fs" onchange="this.form.submit()">
+                    <option value="">All Courses</option>
+                    {% for c in courses %}
+                    <option value="{{ c.id }}" {% if selected_course == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="fg">
+                <label class="fl">Session</label>
+                <select name="session" class="fs" onchange="this.form.submit()">
+                    <option value="">All Sessions</option>
+                    {% for s in sessions %}
+                    <option value="{{ s.id }}" {% if selected_session == s.id|stringformat:"s" %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="g2">
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Add Slot</h3></div>
+        <div class="card-bd">
+            <form method="post">
+                {% csrf_token %}
+                <div class="fg">
+                    <label class="fl">Course</label>
+                    {{ form.course }}
+                    {% if form.course.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.course.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="fg">
+                    <label class="fl">Subject</label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.subject.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="fg">
+                    <label class="fl">Session</label>
+                    {{ form.session }}
+                    {% if form.session.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.session.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="fg">
+                    <label class="fl">Day</label>
+                    {{ form.day_of_week }}
+                    {% if form.day_of_week.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.day_of_week.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="fr">
+                    <div class="fg">
+                        <label class="fl">Start Time</label>
+                        {{ form.start_time }}
+                    </div>
+                    <div class="fg">
+                        <label class="fl">End Time</label>
+                        {{ form.end_time }}
+                    </div>
+                </div>
+                <div class="fg">
+                    <label class="fl">Room</label>
+                    {{ form.room }}
+                    {% if form.room.errors %}<div class="fe"><i data-lucide="alert-circle"></i> {{ form.room.errors.0 }}</div>{% endif %}
+                </div>
+                {% if form.non_field_errors %}
+                <div class="fe" style="margin-bottom:16px"><i data-lucide="alert-circle"></i> {{ form.non_field_errors.0 }}</div>
+                {% endif %}
+                <button type="submit" class="btn btn-p" style="width:100%"><i data-lucide="plus"></i> Add Slot</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-hd"><h3 class="card-t">Weekly Schedule</h3></div>
+        <div class="card-bd" style="padding:0">
+            {% if days_grouped %}
+                {% for day_name, slots in days_grouped %}
+                <table class="lt" style="margin-bottom:4px">
+                    <thead><tr><th colspan="5" style="background:var(--p50);color:var(--p700)">{{ day_name }}</th></tr>
+                    <tr><th>Time</th><th>Course</th><th>Subject</th><th>Room</th><th></th></tr></thead>
+                    <tbody>
+                        {% for slot in slots %}
+                        <tr>
+                            <td>{{ slot.start_time|time:"H:i" }}–{{ slot.end_time|time:"H:i" }}</td>
+                            <td>{{ slot.course.name }}</td>
+                            <td>{{ slot.subject.name }} <span style="color:var(--n400);font-size:12px">({{ slot.subject.staff.admin.first_name }} {{ slot.subject.staff.admin.last_name }})</span></td>
+                            <td>{{ slot.room|default:"—" }}</td>
+                            <td>
+                                <div class="act-btns">
+                                    <a href="{% url 'edit_timetable_slot' slot.id %}" class="ibtn" title="Edit"><i data-lucide="pencil"></i></a>
+                                    <form method="post" action="{% url 'delete_timetable_slot' slot.id %}" onsubmit="return confirm('Delete this slot?')" style="display:inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="ibtn del" title="Delete"><i data-lucide="trash-2"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endfor %}
+            {% else %}
+                <div class="empty"><div class="empty-ico"><i data-lucide="calendar-clock"></i></div><h3>No timetable slots yet</h3><p>Add your first slot to get started</p></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>lucide.createIcons()</script>{% endblock %}

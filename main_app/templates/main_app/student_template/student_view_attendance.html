@@ -5,7 +5,7 @@
 <div class="pg-hdr"><h1 class="pg-title">My Attendance</h1><p class="pg-sub">View your attendance records by subject</p></div>
 <div class="card" style="max-width:540px;margin-bottom:24px" data-fetch-url="{% url 'student_view_attendance' %}">
     <div class="card-bd">
-        <div class="fg" style="margin-bottom:0"><label class="fl">Filter by Subject</label><select name="subject" id="subjectFilter" class="fs"><option value="">All Subjects</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.subject_name }}</option>{% endfor %}</select></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Filter by Subject</label><select name="subject" id="subjectFilter" class="fs"><option value="">All Subjects</option>{% for s in subjects %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select></div>
     </div>
 </div>
 <div id="attendanceResults"></div>
